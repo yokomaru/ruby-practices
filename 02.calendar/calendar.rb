@@ -11,7 +11,7 @@ year = params["y"].nil? || !params["y"].match?(/\A[0-9]+\z/) || !params["y"].to_
 first_date = Date.new(year, month, 1)
 last_date = Date.new(year, month, -1)
 
-calender_array = (first_date..last_date).each_with_object([]) do |date, a|
+calender_days = (first_date..last_date).each_with_object([]) do |date, a|
   a << if date == Date.today
         date.day.to_s.length == 1 ? " \e[30m\e[47m#{date.day}\e[0m" : "\e[30m\e[47m#{date.day}\e[0m"
       else
@@ -20,16 +20,16 @@ calender_array = (first_date..last_date).each_with_object([]) do |date, a|
 end
 
 first_date.wday.times do
-  calender_array.unshift("　")
+  calender_days.unshift("　")
 end
 
-carendar = []
-carendar << ["　","　","#{first_date.month}月",first_date.year,"　","　","　"]
-carendar << ["日","月","火","水","木","金","土"]
-calender_array.each_slice(7) do |d|
-  carendar << d
+carendar_display_datas = []
+carendar_display_datas << ["　","　","#{first_date.month}月",first_date.year,"　","　","　"]
+carendar_display_datas << ["日","月","火","水","木","金","土"]
+calender_days.each_slice(7) do |calender_day|
+  carendar_display_datas << calender_day
 end
 
-carendar.each do |c|
-  puts c.join(" ")
+carendar_display_datas.each do |carendar_display_data|
+  puts carendar_display_data.join(" ")
 end
