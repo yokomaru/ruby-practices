@@ -28,3 +28,14 @@ end
 first_date.wday.times do
   a.unshift("　")
 end
+
+carendar = []
+carendar << ["　","　","#{first_date.month}月",first_date.year,"　","　","　"]
+carendar << ["日","月","火","水","木","金","土"]
+a.each_slice(7) do |d|
+  carendar << d
+end
+
+carendar.each do |c|
+  puts c.join(" ")
+end
