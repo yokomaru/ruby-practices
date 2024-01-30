@@ -5,8 +5,8 @@ require 'date'
 
 params = ARGV.getopts("m:","y:")
 
-month = params["m"].to_i
-year = params["y"].to_i
+month = params["m"].nil? || !params["m"].match?(/[0-9]/) || !params["m"].to_i.between?(1, 12) ?  Date.today.month.to_i : params["m"].to_i
+year = params["y"].nil? || !params["y"].match?(/[0-9]/) || !params["y"].to_i.between?(1970, 2100) ? Date.today.year.to_i : params["y"].to_i
 
 first_date = Date.new(year, month, 1)
 last_date = Date.new(year, month, -1)
@@ -33,7 +33,7 @@ carendar = []
 carendar << ["　","　","#{first_date.month}月",first_date.year,"　","　","　"]
 carendar << ["日","月","火","水","木","金","土"]
 a.each_slice(7) do |d|
-  carendar << d
+carendar << d
 end
 
 carendar.each do |c|
