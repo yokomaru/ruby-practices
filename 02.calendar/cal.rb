@@ -8,6 +8,7 @@ def calender
   params = ARGV.getopts('m:', 'y:')
   month = month(params['m'])
   year = year(params['y'])
+
   first_date = Date.new(year, month, 1)
   last_date = Date.new(year, month, -1)
 
