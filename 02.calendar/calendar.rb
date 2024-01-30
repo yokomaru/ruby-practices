@@ -12,28 +12,24 @@ first_date = Date.new(year, month, 1)
 last_date = Date.new(year, month, -1)
 
 calender_array = (first_date..last_date).each_with_object([]) do |date, a|
-  a << date
-end
-
-a = calender_array.map do |d|
-  if d.wday == 0
-    d.day.to_s.length == 1 ? " \e[31m#{d.day}\e[0m" : "\e[31m#{d.day}\e[0m"
-  elsif d.wday == 6
-    d.day.to_s.length == 1 ? " \e[34m#{d.day}\e[0m" : "\e[34m#{d.day}\e[0m"
-  else
-    d.day.to_s.length == 1 ? " #{d.day}" : "#{d.day}"
-  end
+  a << if date.wday == 0
+        date.day.to_s.length == 1 ? " \e[31m#{date.day}\e[0m" : "\e[31m#{date.day}\e[0m"
+      elsif date.wday == 6
+        date.day.to_s.length == 1 ? " \e[34m#{date.day}\e[0m" : "\e[34m#{date.day}\e[0m"
+      else
+        date.day.to_s.length == 1 ? " #{date.day}" : "#{date.day}"
+      end
 end
 
 first_date.wday.times do
-  a.unshift("　")
+  calender_array.unshift("　")
 end
 
 carendar = []
 carendar << ["　","　","#{first_date.month}月",first_date.year,"　","　","　"]
 carendar << ["日","月","火","水","木","金","土"]
-a.each_slice(7) do |d|
-carendar << d
+calender_array.each_slice(7) do |d|
+  carendar << d
 end
 
 carendar.each do |c|
