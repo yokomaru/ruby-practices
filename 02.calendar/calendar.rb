@@ -12,7 +12,9 @@ first_date = Date.new(year, month, 1)
 last_date = Date.new(year, month, -1)
 
 calender_array = (first_date..last_date).each_with_object([]) do |date, a|
-  a << if date.wday == 0
+  a << if date == Date.today
+        date.day.to_s.length == 1 ? " \e[30m\e[47m#{date.day}\e[0m" : "\e[30m\e[47m#{date.day}\e[0m"
+      elsif date.wday == 0
         date.day.to_s.length == 1 ? " \e[31m#{date.day}\e[0m" : "\e[31m#{date.day}\e[0m"
       elsif date.wday == 6
         date.day.to_s.length == 1 ? " \e[34m#{date.day}\e[0m" : "\e[34m#{date.day}\e[0m"
