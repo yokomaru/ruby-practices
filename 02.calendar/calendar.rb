@@ -25,3 +25,6 @@ a = calender_array.map do |d|
   end
 end
 
+first_date.wday.times do
+  a.unshift("　")
+end
