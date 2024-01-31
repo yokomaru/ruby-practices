@@ -12,9 +12,9 @@ def calender
   first_date = Date.new(year, month, 1)
   last_date = Date.new(year, month, -1)
 
-  calender_days = calender_days(first_date, last_date)
+  calender_dates = calender_dates(first_date, last_date)
 
-  carendar_display_datas = carendar_display_datas(first_date, calender_days)
+  carendar_display_datas = carendar_display_datas(first_date, calender_dates)
 
   carendar_display_datas.each do |carendar_display_data|
     puts carendar_display_data.join(' ')
@@ -29,7 +29,7 @@ def year(param_year)
   param_year.nil? || !param_year.match?(/\A[0-9]+\z/) || !param_year.to_i.between?(1970, 2100) ? Date.today.year.to_i : param_year.to_i
 end
 
-def calender_days(first_date, last_date)
+def calender_dates(first_date, last_date)
   (first_date..last_date).each_with_object([]) do |date, a|
     a << if date == Date.today
            date.day.to_s.length == 1 ? " \e[30m\e[47m#{date.day}\e[0m" : "\e[30m\e[47m#{date.day}\e[0m"
@@ -39,16 +39,16 @@ def calender_days(first_date, last_date)
   end
 end
 
-def carendar_display_datas(first_date, calender_days)
+def carendar_display_datas(first_date, calender_dates)
   first_date.wday.times do
-    calender_days.unshift('　')
+    calender_dates.unshift('　')
   end
 
   carendar_display_datas = []
   carendar_display_datas << ['　', '　', "#{first_date.month}月", first_date.year, '　', '　', '　']
   carendar_display_datas << %w[日 月 火 水 木 金 土]
-  calender_days.each_slice(7) do |calender_day|
-    carendar_display_datas << calender_day
+  calender_dates.each_slice(7) do |calender_date|
+    carendar_display_datas << calender_date
   end
 
   carendar_display_datas << []
