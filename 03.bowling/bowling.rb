@@ -3,15 +3,22 @@
 require 'optparse'
 
 def bowling
-  # 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-  p ARGV[0]
-  score =  ARGV[0].split(",").map(&:to_i)
+  score = ARGV[0].split(",")
+  frame = score.each_with_object([]) do |s, a|
+    if s == "X"
+      a << 10
+      a << 0
+    else
+      a << s.to_i
+    end
+  end
+  p frame
+  p frame.size
   shot = []
   10.times do
-    shot << score.pop(2)
+    shot << frame.pop(2)
   end
-  puts shot.sum(&:sum)
+  p shot.sum(&:sum)
 end
 
 bowling
-
