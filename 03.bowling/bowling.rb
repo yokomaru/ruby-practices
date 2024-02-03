@@ -1,16 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+FRAME_TIMES = 10
 STRIKE_SCORE = 10
-STRIKE_NEXT_FRAME = 1
 SPARE_SCORE = 10
+STRIKE_NEXT_FRAME = 1
 SPARE_NEXT_FRAME = 2
 NOMAL_NEXT_FRAME = 2
-FRAME_TIMES = 10
 
 def bowling
   scores = ARGV[0].split(',')
-  shots = []
   shots = scores.map { |score| score == 'X' ? STRIKE_SCORE : score.to_i }
 
   total_points = 0
