@@ -4,31 +4,25 @@
 FRAME_TIMES = 10
 STRIKE_SCORE = 10
 SPARE_SCORE = 10
-STRIKE_NEXT_FRAME = 1
-SPARE_NEXT_FRAME = 2
-NOMAL_NEXT_FRAME = 2
 
 def bowling
   scores = ARGV[0].split(',')
   shots = scores.map { |score| score == 'X' ? STRIKE_SCORE : score.to_i }
 
-  total_points = 0
-  frame = 0
+  total_point = 0
+  frame_head = 0
 
   FRAME_TIMES.times do
-    if shots[frame] == STRIKE_SCORE
-      total_points += shots[frame] + shots[frame + 1] + shots[frame + 2]
-      frame += STRIKE_NEXT_FRAME
-    elsif shots[frame] + shots[frame + 1] == SPARE_SCORE
-      total_points += shots[frame] + shots[frame + 1] + shots[frame + 2]
-      frame += SPARE_NEXT_FRAME
-    else
-      total_points += shots[frame] + shots[frame + 1]
-      frame += NOMAL_NEXT_FRAME
-    end
+    total_point += if shots[frame_head] == STRIKE_SCORE || shots[frame_head] + shots[frame_head + 1] == SPARE_SCORE
+                     shots[frame_head] + shots[frame_head + 1] + shots[frame_head + 2]
+                   else
+                     shots[frame_head] + shots[frame_head + 1]
+                   end
+
+    frame_head += shots[frame_head] == STRIKE_SCORE ? 1 : 2
   end
 
-  puts total_points
+  puts total_point
 end
 
 bowling
