@@ -27,16 +27,16 @@ def bowling
     break if index > LAST_FRAME
 
     point += if frame[0] == STRIKE_FIRST_SHOT_SCORE
-                if frames[index + 1][0] == STRIKE_FIRST_SHOT_SCORE
-                  frame[0] + frames[index + 1][0] + frames[index + 2][0]
-                else
-                  frame[0] + frames[index + 1][0] + frames[index + 1][1]
-                end
-            elsif frame.sum == SPARE_SUM_SCORE
-              frame.sum + frames[index + 1][0]
-            else
-              frame.sum
-            end
+               if frames[index + 1][0] == STRIKE_FIRST_SHOT_SCORE
+                 frame[0] + frames[index + 1][0] + frames[index + 2][0]
+               else
+                 frame[0] + frames[index + 1][0] + frames[index + 1][1]
+               end
+             elsif frame.sum == SPARE_SUM_SCORE
+               frame.sum + frames[index + 1][0]
+             else
+               frame.sum
+             end
   end
   puts point
 end
