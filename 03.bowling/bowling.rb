@@ -1,12 +1,17 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+STRIKE_FIRST_SHOT_SCORE = 10
+STRIKE_SECOND_SHOT_SCORE = 0
+SPARE_SUM_SCORE = 10
+LAST_FRAME = 9
+
 def bowling
   scores = ARGV[0].split(",")
   shots = scores.each_with_object([]).with_index(1) do |(score, shot), index|
     if score == "X"
-      shot << 10
-      shot << 0
+      shot << STRIKE_FIRST_SHOT_SCORE
+      shot << STRIKE_SECOND_SHOT_SCORE
     else
       shot << score.to_i
     end
@@ -20,11 +25,11 @@ def bowling
   point = 0
   frames.each_with_index do |frame, index|
     # 10フレーム目以降は計算しない
-    break if index > 9
+    break if index > LAST_FRAME
     # ストライクだった場合
-    if frame[0] == 10
+    if frame[0] == STRIKE_FIRST_SHOT_SCORE
       # 次もストライクだった場合
-      if frames[index + 1][0] == 10
+      if frames[index + 1][0] == STRIKE_FIRST_SHOT_SCORE
         # 次とその次のフレームの１投目を合計した値を合算する
         point += frame[0] + frames[index + 1][0] + frames[index + 2][0]
       # 次がストライクじゃなかった場合は次のフレームの１投目と２投目を合算する
@@ -32,7 +37,7 @@ def bowling
         point += frame[0] + frames[index + 1][0] + frames[index + 1][1]
       end
     # スペアだった場合
-    elsif frame.sum == 10
+    elsif frame.sum == SPARE_SUM_SCORE
       # 次のフレームの１投目を合算する
       point += frame.sum + frames[index + 1][0]
     else
