@@ -1,44 +1,38 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-
-STRIKE_FIRST_SHOT_SCORE = 10
-STRIKE_SECOND_SHOT_SCORE = 0
-SPARE_SUM_SCORE = 10
-LAST_FRAME = 9
+STRIKE_SCORE = 10
+STRIKE_NEXT_FRAME = 1
+SPARE_SCORE = 10
+SPARE_NEXT_FRAME = 2
+NOMAL_NEXT_FRAME = 2
+FRAME_TIMES = 10
 
 def bowling
   scores = ARGV[0].split(',')
   shots = scores.each_with_object([]) do |score, shot|
     if score == 'X'
-      shot << STRIKE_FIRST_SHOT_SCORE
-      shot << STRIKE_SECOND_SHOT_SCORE
+      shot << STRIKE_SCORE
     else
       shot << score.to_i
     end
   end
 
-  frames = []
-  shots.each_slice(2) do |shot|
-    frames << shot
+  total_points = 0
+  frame = 0
+  FRAME_TIMES.times do |index|
+    if shots[frame] == STRIKE_SCORE
+      total_points += shots[frame] + shots[frame + 1] + shots[frame + 2]
+      frame += STRIKE_NEXT_FRAME
+    elsif shots[frame] + shots[frame + 1] == SPARE_SCORE
+      total_points += shots[frame] + shots[frame + 1] + shots[frame + 2]
+      frame += SPARE_NEXT_FRAME
+    else
+      total_points += shots[frame] + shots[frame + 1]
+      frame += NOMAL_NEXT_FRAME
+    end
   end
 
-  point = 0
-  frames.each_with_index do |frame, index|
-    break if index > LAST_FRAME
-
-    point += if frame[0] == STRIKE_FIRST_SHOT_SCORE
-               if frames[index + 1][0] == STRIKE_FIRST_SHOT_SCORE
-                 frame[0] + frames[index + 1][0] + frames[index + 2][0]
-               else
-                 frame[0] + frames[index + 1][0] + frames[index + 1][1]
-               end
-             elsif frame.sum == SPARE_SUM_SCORE
-               frame.sum + frames[index + 1][0]
-             else
-               frame.sum
-             end
-  end
-  puts point
+  puts total_points
 end
 
 bowling
