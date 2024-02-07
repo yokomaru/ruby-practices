@@ -28,11 +28,11 @@ def generate_calender
 end
 
 def generate_month(param_month)
-  param_month.nil? || !param_month.match?(/\A[0-9]+\z/) || !param_month.to_i.between?(1, 12) ? Date.today.month.to_i : param_month.to_i
+  param_month.to_i.between?(1, 12) ? param_month.to_i : Date.today.month
 end
 
 def generate_year(param_year)
-  param_year.nil? || !param_year.match?(/\A[0-9]+\z/) || !param_year.to_i.between?(1970, 2100) ? Date.today.year.to_i : param_year.to_i
+  param_year.to_i.between?(1970, 2100) ? param_year.to_i : Date.today.year
 end
 
 def generate_calender_dates(first_date, last_date)
