@@ -14,9 +14,9 @@ def generate_calender
 
   calender_dates = generate_calender_dates(first_date, last_date)
 
-  carendar_display_datas = generate_carendar_display_datas(first_date, calender_dates)
+  carendar_display_data = generate_carendar_display_data(first_date, calender_dates)
 
-  carendar_display_datas.each do |carendar_display_data|
+  carendar_display_data.each do |carendar_display_data|
     puts carendar_display_data.join(' ')
   end
 end
@@ -39,21 +39,21 @@ def generate_calender_dates(first_date, last_date)
   end
 end
 
-def generate_carendar_display_datas(first_date, calender_dates)
+def generate_carendar_display_data(first_date, calender_dates)
   first_date.wday.times do
     calender_dates.unshift('　')
   end
 
-  carendar_display_datas = []
-  carendar_display_datas << ['　', '　', "#{first_date.month}月", first_date.year, '　', '　', '　']
-  carendar_display_datas << %w[日 月 火 水 木 金 土]
+  carendar_display_data = []
+  carendar_display_data << ['　', '　', "#{first_date.month}月", first_date.year, '　', '　', '　']
+  carendar_display_data << %w[日 月 火 水 木 金 土]
   calender_dates.each_slice(7) do |calender_date|
-    carendar_display_datas << calender_date
+    carendar_display_data << calender_date
   end
 
-  carendar_display_datas << []
+  carendar_display_data << []
 
-  carendar_display_datas
+  carendar_display_data
 end
 
 generate_calender
