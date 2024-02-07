@@ -30,12 +30,12 @@ def generate_year(param_year)
 end
 
 def generate_calender_dates(first_date, last_date)
-  (first_date..last_date).each_with_object([]) do |date, a|
-    a << if date == Date.today
-           date.day.to_s.length == 1 ? " \e[30m\e[47m#{date.day}\e[0m" : "\e[30m\e[47m#{date.day}\e[0m"
-         else
-           date.day.to_s.length == 1 ? " #{date.day}" : date.day.to_s
-         end
+  (first_date..last_date).map do |date|
+    if date == Date.today
+      date.day.to_s.length == 1 ? " \e[30m\e[47m#{date.day}\e[0m" : "\e[30m\e[47m#{date.day}\e[0m"
+    else
+      date.day.to_s.length == 1 ? " #{date.day}" : date.day.to_s
+    end
   end
 end
 
