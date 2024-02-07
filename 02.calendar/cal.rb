@@ -32,9 +32,9 @@ end
 def generate_calender_dates(first_date, last_date)
   (first_date..last_date).map do |date|
     if date == Date.today
-      date.day.to_s.length == 1 ? " \e[30m\e[47m#{date.day}\e[0m" : "\e[30m\e[47m#{date.day}\e[0m"
+      "\e[30m\e[47m#{date.day.to_s.rjust(2)}\e[0m"
     else
-      date.day.to_s.length == 1 ? " #{date.day}" : date.day.to_s
+      date.day.to_s.rjust(2)
     end
   end
 end
