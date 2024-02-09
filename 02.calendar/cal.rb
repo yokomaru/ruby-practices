@@ -13,12 +13,16 @@ def generate_calender
   first_date = Date.new(year, month, 1)
   last_date = Date.new(year, month, -1)
 
-  calender_dates = (first_date..last_date).map { |date| date == Date.today ? "\e[30m\e[47m#{date.day.to_s.rjust(2)}\e[0m" : date.day.to_s.rjust(2) }
+  calender_dates = (first_date..last_date).map do |date|
+    display_date = date.day.to_s.rjust(2)
+    date == Date.today ? "\e[30m\e[47m#{display_date}\e[0m" : display_date
+  end
+
   first_date.wday.times { calender_dates.unshift('　') }
 
   puts "#{first_date.month}月 #{first_date.year}".center(20)
   puts '日 月 火 水 木 金 土'
-  calender_dates.each_slice(7) { |calender_date| puts calender_date.join(' ') }
+  calender_dates.each_slice(7) { |dates| puts dates.join(' ') }
   puts "\n"
 end
 
