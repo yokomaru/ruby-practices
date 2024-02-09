@@ -14,8 +14,8 @@ def generate_calender
   last_date = Date.new(year, month, -1)
 
   calender_dates = (first_date..last_date).map do |date|
-    display_date = date.day.to_s.rjust(2)
-    date == Date.today ? "\e[30m\e[47m#{display_date}\e[0m" : display_date
+    displayed_date = date.day.to_s.rjust(2)
+    date == Date.today ? "\e[30m\e[47m#{displayed_date}\e[0m" : displayed_date
   end
 
   first_date.wday.times { calender_dates.unshift('　') }
