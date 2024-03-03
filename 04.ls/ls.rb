@@ -6,33 +6,77 @@ require 'debug'
 COLUMN = 3
 
 def main
-  directory = ARGV.empty? ? Dir.open('.') : Dir.open(ARGV[0])
+  args = ARGV
+
+  tmp_directory_files = []
   directory_files = []
-  directory.each_child do |file|
-    directory_files << file.ljust(21) unless /^\./.match(file)
-  end
-
-  directory_file_size = directory_files.count
-  row = directory_file_size % COLUMN == 0 ? directory_file_size / COLUMN :  directory_file_size / COLUMN + 1
-  sorted_directory_files = directory_files.sort
-
-  arr = Array.new(COLUMN) { Array.new(row, nil) }
-  arr_int = 0
-  arr_arr_int = 0
-  sorted_directory_files.each.with_index(1) do |file, i|
-    arr[arr_int][arr_arr_int] = file
-    arr_arr_int += 1
-    if i % row == 0
-      arr_int += 1
-      arr_arr_int = 0
+  if !args.empty?
+    if File.directory?(args[0])
+      directory = Dir.open(args[0])
+      directory.each_child do |file|
+        tmp_directory_files << {file_name: file, file_size: file.bytesize} unless /^\./.match(file)
+      end
+      directory_files = tmp_directory_files.map { |file| file[:file_name]}.sort
+      max_file_name = tmp_directory_files.map { |file| file[:file_size] }.max
+    elsif File.file?(args[0])
+      args.each do |file|
+        directory_files << file
+      end
+      max_file_name = directory_files.map { |file| file.size }.max
+      p max_file_name
+    else
+      puts "ls: #{args[0]}: No such file or directory"
+      return
     end
+  else
+    directory = Dir.open('.')
+    directory.each_child do |file|
+      tmp_directory_files << {file_name: file, file_size: file.bytesize} unless /^\./.match(file)
+    end
+    directory_files = tmp_directory_files.map { |file| file[:file_name]}.sort
+    max_file_name = tmp_directory_files.map { |file| file[:file_size] }.max
   end
-  map_array = sorted_directory_files.each_slice(3).map {|arr| arr}
 
-  arr.transpose.each do |a|
+  file_size = directory_files.count
+  terminal_width = IO::console_size[1]
+  max_column = 3
+  min_column = 1
+
+  width = terminal_width/max_file_name
+
+  #binding.break
+  slice = if width <= 0
+            min_column
+          elsif width < max_column
+            width
+          elsif width >= max_column
+            max_column
+          end
+
+  slice = (file_size.to_f / slice.to_f).ceil
+
+  array = directory_files.each_slice(slice).map do |arr|
+    new_arr = arr.map do |s|
+       output_width = s.each_char.map{|c| c.bytesize == 1 ? 1 : 2}.reduce(0, &:+)
+       padding_size = [0, max_file_name - output_width].max
+       p "文字：#{s}"
+       p "バイト数：#{s.bytesize}"
+       p "padding_size: #{padding_size}"
+       p "s.size: #{s.size}"
+       s.ljust(padding_size + s.size)
+    end
+    if new_arr.size < slice
+      (slice - new_arr.size).times do
+        new_arr << ""
+      end
+    end
+    new_arr
+  end
+  p array
+
+  array.transpose.each do |a|
     puts a.join(" ")
   end
-
 end
 
 main
