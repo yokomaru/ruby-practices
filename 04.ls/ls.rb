@@ -3,7 +3,6 @@
 require 'optparse'
 require 'debug'
 
-COLUMN = 3
 TERMINAL_WIDTH = IO::console_size[1]
 MAX_COLUMN = 3
 MIN_COLUMN = 1
@@ -11,37 +10,52 @@ BUFFER_WIDTH = 1
 
 def main
   # 引数を受け取る
-  args = ARGV
-  p args
-
-  directory_files = []
+  args = ARGV.sort
+  directories = []
+  files = []
   if args.empty?
-    sorted_directory_files = generate_directory_files(Dir.open('.'))
-  elsif File.directory?(args[0])
-    sorted_directory_files = generate_directory_files(Dir.open(args[0]))
-  elsif File.file?(args[0])
-    sorted_directory_files = sort_directory_files(args)
+    directories << Dir.open('.')
   else
-    puts "ls: #{args[0]}: No such file or directory"
-    return
+    args.each do |arg|
+      if File.directory?(arg)
+        directories << Dir.open(arg)
+      elsif File.file?(arg)
+        files << arg
+      else
+        puts "ls: #{arg}: No such file or directory"
+      end
+    end
   end
 
-  return if sorted_directory_files.count.zero?
+  return if directories.count.zero? && files.count.zero?
+  display_files(files, files.count) if !files.empty?
+  puts if !files.empty? && !directories.empty?
+  display_directories_files(directories) if !directories.empty?
+end
 
-  max_file_name = fetch_max_file_name(sorted_directory_files)
-
-  files_count = sorted_directory_files.count
-  # ターミナルの幅を最大のファイルで割る数字を出す
+def display_files(files, files_count)
+  sorted_files = sort_directory_files(files)
+  max_file_name = fetch_max_file_name(sorted_files)
   display_width = calculate_display_width(max_file_name)
-
-  # 上の数字を1~3の数字に当てはめる
   slice_number = fetch_slice_number(display_width)
-
-  # ファイルの総数とrowで割り算をしてcol算出する
   column_size = calculate_column_size(files_count, slice_number)
-
-  display_files = fetch_display_files(sorted_directory_files, column_size, max_file_name)
+  display_files = fetch_display_files(sorted_files, column_size, max_file_name)
   display_files.transpose.each {|files| puts files.join(" ")}
+end
+
+def display_directories_files(directories)
+  directories.each.with_index(1) do |directory, i|
+    sorted_files = generate_directory_files(directory)
+    max_file_name = fetch_max_file_name(sorted_files)
+    files_count = sorted_files.count
+    display_width = calculate_display_width(max_file_name)
+    slice_number = fetch_slice_number(display_width)
+    column_size = calculate_column_size(files_count, slice_number)
+    display_directory_files = fetch_display_files(sorted_files, column_size, max_file_name)
+    puts "#{directory.path}:" if directories.size > 1
+    display_directory_files.transpose.each {|files| puts files.join(" ")}
+    puts if directories.size > 1 && i < directories.size
+  end
 end
 
 def generate_directory_files(directory)
