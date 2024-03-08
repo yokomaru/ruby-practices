@@ -4,8 +4,8 @@
 MAX_COLUMN = 3
 MIN_COLUMN = 1
 BUFFER_WIDTH = 1
-NORMAL_BYTE_SIZE = 1
-MARTI_BYTE_SIZE = 2
+NORMAL_BYTESIZE = 1
+MARTI_BYTESIZE = 2
 
 def main
   args = ARGV.sort
@@ -20,7 +20,7 @@ def main
     puts "ls: #{arg}: No such file or directory"
   end
 
-  display_files(arg_files, arg_files.count)
+  display_files(arg_files, arg_files.size)
   puts if exist_directories_and_files?(arg_directories, arg_files)
   display_directories(arg_directories, args.size)
 end
@@ -36,21 +36,21 @@ def display_files(files, files_count)
   transpose_display_files(generated_files)
 end
 
-def display_directories(directories, args_size)
+def display_directories(directories, args_count)
   return if directories.empty?
 
   directories_count = directories.size
   directories.each.with_index(1) do |directory, i|
-    puts "#{directory.path}:" if args_size > 1
+    puts "#{directory.path}:" if args_count > 1
 
     directory_files = []
     directory.each_child do |file|
       directory_files << file unless /^\./.match?(file)
     end
-    file_count = directory_files.count
+    directory_files_count = directory_files.size
 
-    if file_count >= 1
-      generated_files = generate_display_files(directory_files, file_count)
+    if directory_files_count >= 1
+      generated_files = generate_display_files(directory_files, directory_files_count)
       transpose_display_files(generated_files)
     end
 
@@ -58,43 +58,44 @@ def display_directories(directories, args_size)
   end
 end
 
-def generate_display_files(files, files_count)
-  sorted_files = files.map { |file| file }.sort
-  longest_filename_size = sorted_files.map(&:bytesize).max
-  column_size = calculate_column_size(longest_filename_size, files_count)
-  slice_display_files_in_column_size(sorted_files, column_size, longest_filename_size)
+def generate_display_files(directory_files, directory_files_count)
+  sorted_files = directory_files.map { |file| file }.sort
+  longest_filename_length = sorted_files.map(&:bytesize).max
+  max_displayable_files_count_in_column = calculate_max_displayable_files_count_in_column(longest_filename_length, directory_files_count)
+  slice_display_files(sorted_files, max_displayable_files_count_in_column, longest_filename_length)
 end
 
-def calculate_column_size(longest_filename_size, files_count)
-  terminal_width = `tput cols` # `tput cols` = 実行するターミナルの幅を取得
-  display_width = terminal_width.to_i / (longest_filename_size + BUFFER_WIDTH)
-  slice_number = fetch_slice_number(display_width)
-  (files_count.to_f / slice_number).ceil
+def calculate_max_displayable_files_count_in_column(longest_filename_length, directory_files_count)
+  terminal_width = `tput cols`.to_i # `tput cols` = 実行するターミナルの幅を取得
+  max_displayable_files_count_in_a_row = terminal_width / (longest_filename_length + BUFFER_WIDTH)
+  displayable_files_count_in_a_row = fetch_displayable_files_count(max_displayable_files_count_in_a_row)
+  (directory_files_count.to_f / displayable_files_count_in_a_row).ceil
 end
 
-def fetch_slice_number(width)
-  if width <= 0
+def fetch_displayable_files_count(file_size)
+  if file_size <= 0
     MIN_COLUMN
-  elsif width < MAX_COLUMN
-    width
-  elsif width >= MAX_COLUMN
+  elsif file_size < MAX_COLUMN
+    file_size
+  elsif file_size >= MAX_COLUMN
     MAX_COLUMN
   end
 end
 
-def slice_display_files_in_column_size(sorted_files, column_size, longest_filename_size)
-  sorted_files.each_slice(column_size).map do |files|
-    sliced_files = files.map { |file| file.ljust(calculate_align_left_size(file, longest_filename_size)) }
-    (column_size - sliced_files.size).times { sliced_files << '' } if sliced_files.size < column_size
+def slice_display_files(sorted_files, max_displayable_files_count, longest_filename_length)
+  sorted_files.each_slice(max_displayable_files_count).map do |files|
+    sliced_files = files.map { |file_name| file_name.ljust(calculate_align_left_width(file_name, longest_filename_length)) }
+    sliced_files_count = sliced_files.size
+    (max_displayable_files_count - sliced_files_count).times { sliced_files << '' } if sliced_files_count < max_displayable_files_count
     sliced_files
   end
 end
 
-def calculate_align_left_size(file_name, longest_filename_size)
+def calculate_align_left_width(file_name, longest_filename_length)
   adjusted_byte_number = file_name.each_char
-                                  .map { |char| char.bytesize == NORMAL_BYTE_SIZE ? NORMAL_BYTE_SIZE : MARTI_BYTE_SIZE }
+                                  .map { |char| char.bytesize == NORMAL_BYTESIZE ? NORMAL_BYTESIZE : MARTI_BYTESIZE }
                                   .reduce(0, &:+)
-  padding_size = [0, longest_filename_size - adjusted_byte_number].max
+  padding_size = [0, longest_filename_length - adjusted_byte_number].max
   padding_size + file_name.size
 end
 

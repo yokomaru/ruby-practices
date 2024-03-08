@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require_relative '../04.ls/ls'
+require_relative '../ls'
 
 class LsTest < Minitest::Test
   def setup
