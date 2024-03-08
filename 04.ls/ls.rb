@@ -21,12 +21,8 @@ def main
   end
 
   display_files(arg_files, arg_files.size)
-  puts if exist_directories_and_files?(arg_directories, arg_files)
+  puts if !arg_directories.empty? && !arg_files.empty?
   display_directories(arg_directories, args.size)
-end
-
-def exist_directories_and_files?(directories, files)
-  !directories.empty? && !files.empty?
 end
 
 def display_files(files, files_count)
@@ -58,28 +54,24 @@ def display_directories(directories, args_count)
   end
 end
 
-def generate_display_files(directory_files, directory_files_count)
-  sorted_files = directory_files.map { |file| file }.sort
+def generate_display_files(files, files_count)
+  sorted_files = files.map { |file| file }.sort
   longest_filename_length = sorted_files.map(&:bytesize).max
-  max_displayable_files_count_in_column = calculate_max_displayable_files_count_in_column(longest_filename_length, directory_files_count)
+  max_displayable_files_count_in_column = calculate_max_displayable_files_count_in_column(longest_filename_length, files_count)
   slice_display_files(sorted_files, max_displayable_files_count_in_column, longest_filename_length)
 end
 
-def calculate_max_displayable_files_count_in_column(longest_filename_length, directory_files_count)
+def calculate_max_displayable_files_count_in_column(longest_filename_length, files_count)
   terminal_width = `tput cols`.to_i # `tput cols` = 実行するターミナルの幅を取得
   max_displayable_files_count_in_a_row = terminal_width / (longest_filename_length + BUFFER_WIDTH)
-  displayable_files_count_in_a_row = fetch_displayable_files_count(max_displayable_files_count_in_a_row)
-  (directory_files_count.to_f / displayable_files_count_in_a_row).ceil
-end
-
-def fetch_displayable_files_count(file_size)
-  if file_size <= 0
-    MIN_COLUMN
-  elsif file_size < MAX_COLUMN
-    file_size
-  elsif file_size >= MAX_COLUMN
-    MAX_COLUMN
-  end
+  displayable_files_count_in_a_row = if max_displayable_files_count_in_a_row <= 0
+                                       MIN_COLUMN
+                                     elsif max_displayable_files_count_in_a_row < MAX_COLUMN
+                                       max_displayable_files_count_in_a_row
+                                     elsif max_displayable_files_count_in_a_row >= MAX_COLUMN
+                                       MAX_COLUMN
+                                     end
+  (files_count.to_f / displayable_files_count_in_a_row).ceil
 end
 
 def slice_display_files(sorted_files, max_displayable_files_count, longest_filename_length)
