@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require 'debug'
 require_relative '../04.ls/ls'
 
 class LsTest < Minitest::Test
@@ -97,7 +96,7 @@ class LsTest < Minitest::Test
     assert_equal expected, `ruby #{@wd}/ls.rb TEST_DIR test`
   end
 
-  def test_ls_specified_multiple_directories_and_file
+  def test_ls_specified_directory_and_file
     FileUtils.cd("#{@wd}/test/test_directory_exist_files_and_directories")
     expected = <<~LS_RESULT
       test.txt
@@ -108,7 +107,7 @@ class LsTest < Minitest::Test
     assert_equal expected, `ruby #{@wd}/ls.rb test.txt TEST_DIR`
   end
 
-  def test_ls_specified_multiple_directories_and_nonexistent_file
+  def test_ls_specified_directory_and_nonexistent_file
     FileUtils.cd("#{@wd}/test/test_directory_exist_files_and_directories")
     expected = <<~LS_RESULT
       ls: test_nothing_file_1.txt: No such file or directory
@@ -118,7 +117,7 @@ class LsTest < Minitest::Test
     assert_equal expected, `ruby #{@wd}/ls.rb test_nothing_file_1.txt TEST_DIR`
   end
 
-  def test_ls_multiple_directory_and_file_and_dose_not_exist_file_specify
+  def test_ls_specified_directory_and_file_and_nonexistent_file
     FileUtils.cd("#{@wd}/test/test_directory_exist_files_and_directories")
     expected = <<~LS_RESULT
       ls: test_nothing_file_1.txt: No such file or directory
@@ -126,14 +125,11 @@ class LsTest < Minitest::Test
 
       TEST_DIR:
       test_file_1.txt
-
-      test:
-      test_file_2.txt
     LS_RESULT
-    assert_equal expected, `ruby #{@wd}/ls.rb test_nothing_file_1.txt test.txt TEST_DIR test`
+    assert_equal expected, `ruby #{@wd}/ls.rb test_nothing_file_1.txt test.txt TEST_DIR`
   end
 
-  def test_ls_multiple_directory_and_multiple_file_and_multiple_dose_not_exist_file_specify
+  def test_ls_multiple_directories_and_multiple_files_and_multiple_nonexistent_files
     FileUtils.cd("#{@wd}/test/test_directory_exist_files_and_directories")
     expected = <<~LS_RESULT
       ls: test_nothing_file_1.txt: No such file or directory
@@ -149,9 +145,12 @@ class LsTest < Minitest::Test
     assert_equal expected, `ruby #{@wd}/ls.rb test_nothing_file_1.txt test_nothing_file_2.txt test.txt TEST_FILE.txt TEST_DIR test`
   end
 
-  def test_ls_directory_multi_byte_file_name
+  def test_ls_multi_byte_file_name
     FileUtils.cd("#{@wd}/test/test_directory_multi_byte_file_name")
-    expected = "test_1_テスト.txt    test_3.txt           test_5.txt          \ntest_2.txt           test_4.txt           test_6.txt          \n"
+    expected = <<~LS_RESULT
+      test_1_テスト.txt    test_3.txt           test_5.txt#{'          '}
+      test_2.txt           test_4.txt           test_6.txt#{'          '}
+    LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb`
   end
 end
