@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'optparse'
-require 'debug'
-
 MAX_COLUMN = 3
 MIN_COLUMN = 1
 BUFFER_WIDTH = 1
@@ -50,10 +47,10 @@ def display_directories(directories, args_size)
     directory.each_child do |file|
       directory_files << file unless /^\./.match?(file)
     end
-    files_count_in_directory = directory_files.count
+    file_count = directory_files.count
 
-    if files_count_in_directory >= 1
-      generated_files = generate_display_files(directory_files, files_count_in_directory)
+    if file_count >= 1
+      generated_files = generate_display_files(directory_files, file_count)
       transpose_display_files(generated_files)
     end
 
@@ -69,8 +66,8 @@ def generate_display_files(files, files_count)
 end
 
 def calculate_column_size(longest_filename_size, files_count)
-  # IO.console_size[1] = 実行するターミナルの幅を取得
-  display_width = IO.console_size[1] / (longest_filename_size + BUFFER_WIDTH)
+  terminal_width = `tput cols` # `tput cols` = 実行するターミナルの幅を取得
+  display_width = terminal_width.to_i / (longest_filename_size + BUFFER_WIDTH)
   slice_number = fetch_slice_number(display_width)
   (files_count.to_f / slice_number).ceil
 end
