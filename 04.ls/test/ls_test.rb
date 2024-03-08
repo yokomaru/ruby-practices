@@ -49,7 +49,7 @@ class LsTest < Minitest::Test
 
   def test_ls_five_files_exist
     FileUtils.cd("#{@wd}/test/test_directory_5")
-    assert_equal "test_1.txt test_3.txt test_5.txt\ntest_2.txt test_4.txt \n", `ruby #{@wd}/ls.rb`
+    assert_equal "test_1.txt test_3.txt test_5.txt\ntest_2.txt test_4.txt\n", `ruby #{@wd}/ls.rb`
   end
 
   def test_ls_six_files_exist
@@ -61,11 +61,11 @@ class LsTest < Minitest::Test
     FileUtils.cd("#{@wd}/test/test_directory_long_file_name")
     expected = <<~LS_RESULT
       test_1_test_test_test_test_test_test_test_test_test_test_test_test_test.txt
-      test_2.txt#{'                                                                 '}
-      test_3.txt#{'                                                                 '}
-      test_4.txt#{'                                                                 '}
-      test_5.txt#{'                                                                 '}
-      test_6.txt#{'                                                                 '}
+      test_2.txt
+      test_3.txt
+      test_4.txt
+      test_5.txt
+      test_6.txt
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb`
   end
@@ -73,8 +73,8 @@ class LsTest < Minitest::Test
   def test_ls_exsisting_directories_and_files
     FileUtils.cd("#{@wd}/test/test_directory_exist_files_and_directories")
     expected = <<~LS_RESULT
-      TEST_DIR      test#{'         '}
-      TEST_FILE.txt test.txt#{'     '}
+      TEST_DIR      test
+      TEST_FILE.txt test.txt
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb`
   end
@@ -134,7 +134,7 @@ class LsTest < Minitest::Test
     expected = <<~LS_RESULT
       ls: test_nothing_file_1.txt: No such file or directory
       ls: test_nothing_file_2.txt: No such file or directory
-      TEST_FILE.txt test.txt#{'     '}
+      TEST_FILE.txt test.txt
 
       TEST_DIR:
       test_file_1.txt
@@ -148,8 +148,8 @@ class LsTest < Minitest::Test
   def test_ls_multi_byte_file_name
     FileUtils.cd("#{@wd}/test/test_directory_multi_byte_file_name")
     expected = <<~LS_RESULT
-      test_1_テスト.txt    test_3.txt           test_5.txt#{'          '}
-      test_2.txt           test_4.txt           test_6.txt#{'          '}
+      test_1_テスト.txt    test_3.txt           test_5.txt
+      test_2.txt           test_4.txt           test_6.txt
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb`
   end

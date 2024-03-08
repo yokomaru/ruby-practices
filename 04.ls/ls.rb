@@ -92,7 +92,7 @@ def calculate_align_left_width(file_name, longest_filename_length)
 end
 
 def transpose_display_files(display_files)
-  display_files.transpose.each { |files| puts files.join(' ') }
+  display_files.transpose.each { |files| puts files.join(' ').strip }
 end
 
 main
