@@ -117,6 +117,16 @@ class LsTest < Minitest::Test
     assert_equal expected, `ruby #{@wd}/ls.rb test_nothing_file_1.txt TEST_DIR`
   end
 
+  def test_ls_specified_file_and_empty_directory
+    FileUtils.cd("#{@wd}")
+    expected = <<~LS_RESULT
+      ls.rb
+
+      test/test_directory_0:
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb ls.rb test/test_directory_0`
+  end
+
   def test_ls_specified_directory_and_file_and_nonexistent_file
     FileUtils.cd("#{@wd}/test/test_directory_exist_files_and_directories")
     expected = <<~LS_RESULT

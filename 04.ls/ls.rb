@@ -68,7 +68,7 @@ def calculate_max_displayable_files_count_in_column(longest_filename_length, fil
                                        MIN_COLUMN
                                      elsif max_displayable_files_count_in_a_row < MAX_COLUMN
                                        max_displayable_files_count_in_a_row
-                                     elsif max_displayable_files_count_in_a_row >= MAX_COLUMN
+                                     else
                                        MAX_COLUMN
                                      end
   (files_count.to_f / displayable_files_count_in_a_row).ceil
