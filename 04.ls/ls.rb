@@ -62,7 +62,7 @@ def generate_display_files(files, files_count)
   sorted_files = files.map { |file| file }.sort
   longest_filename_size = sorted_files.map(&:bytesize).max
   column_size = calculate_column_size(longest_filename_size, files_count)
-  slice_column_size_display_files(sorted_files, column_size, longest_filename_size)
+  slice_display_files_in_column_size(sorted_files, column_size, longest_filename_size)
 end
 
 def calculate_column_size(longest_filename_size, files_count)
@@ -82,7 +82,7 @@ def fetch_slice_number(width)
   end
 end
 
-def slice_column_size_display_files(sorted_files, column_size, longest_filename_size)
+def slice_display_files_in_column_size(sorted_files, column_size, longest_filename_size)
   sorted_files.each_slice(column_size).map do |files|
     sliced_files = files.map { |file| file.ljust(calculate_align_left_size(file, longest_filename_size)) }
     (column_size - sliced_files.size).times { sliced_files << '' } if sliced_files.size < column_size
@@ -91,7 +91,9 @@ def slice_column_size_display_files(sorted_files, column_size, longest_filename_
 end
 
 def calculate_align_left_size(file_name, longest_filename_size)
-  adjusted_byte_number = file_name.each_char.map { |c| c.bytesize == NORMAL_BYTE_SIZE ? NORMAL_BYTE_SIZE : MARTI_BYTE_SIZE }.reduce(0, &:+)
+  adjusted_byte_number = file_name.each_char
+                                  .map { |char| char.bytesize == NORMAL_BYTE_SIZE ? NORMAL_BYTE_SIZE : MARTI_BYTE_SIZE }
+                                  .reduce(0, &:+)
   padding_size = [0, longest_filename_size - adjusted_byte_number].max
   padding_size + file_name.size
 end
