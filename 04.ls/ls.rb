@@ -20,15 +20,15 @@ def main
     puts "ls: #{arg}: No such file or directory"
   end
 
-  display_files(arg_files, arg_files.size)
+  display_files(arg_files)
   puts if !arg_directories.empty? && !arg_files.empty?
   display_directories(arg_directories, args.size)
 end
 
-def display_files(files, files_count)
+def display_files(files)
   return if files.empty?
 
-  generated_files = generate_display_files(files, files_count)
+  generated_files = generate_display_files(files)
   transpose_display_files(generated_files)
 end
 
@@ -45,7 +45,7 @@ def display_directories(directories, args_count)
     directory_files_count = directory_files.size
 
     if directory_files_count >= 1
-      generated_files = generate_display_files(directory_files, directory_files_count)
+      generated_files = generate_display_files(directory_files)
       transpose_display_files(generated_files)
     end
 
@@ -53,10 +53,10 @@ def display_directories(directories, args_count)
   end
 end
 
-def generate_display_files(files, files_count)
+def generate_display_files(files)
   sorted_files = files.map { |file| file }.sort
   longest_filename_length = sorted_files.map(&:bytesize).max
-  max_displayable_files_count_in_column = calculate_max_displayable_files_count_in_column(longest_filename_length, files_count)
+  max_displayable_files_count_in_column = calculate_max_displayable_files_count_in_column(longest_filename_length, files.size)
   slice_display_files(sorted_files, max_displayable_files_count_in_column, longest_filename_length)
 end
 
