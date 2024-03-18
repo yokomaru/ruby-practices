@@ -63,13 +63,8 @@ end
 def calculate_max_displayable_files_count_in_column(longest_filename_length, files_count)
   terminal_width = `tput cols`.to_i # `tput cols` = 実行するターミナルの幅を取得
   max_displayable_files_count_in_a_row = terminal_width / (longest_filename_length + BUFFER_WIDTH)
-  displayable_files_count_in_a_row = if max_displayable_files_count_in_a_row <= 0
-                                       MIN_COLUMN
-                                     elsif max_displayable_files_count_in_a_row < MAX_COLUMN
-                                       max_displayable_files_count_in_a_row
-                                     else
-                                       MAX_COLUMN
-                                     end
+  displayable_files_count_in_a_row = [max_displayable_files_count_in_a_row, MIN_COLUMN].max
+  displayable_files_count_in_a_row = [max_displayable_files_count_in_a_row, MAX_COLUMN].min
   (files_count.to_f / displayable_files_count_in_a_row).ceil
 end
 
