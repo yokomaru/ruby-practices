@@ -86,7 +86,7 @@ end
 def calculate_align_left_width(file_name, longest_filename_length)
   adjusted_byte_number = file_name.each_char
                                   .map { |char| char.bytesize == NORMAL_BYTESIZE ? NORMAL_BYTESIZE : MARTI_BYTESIZE }
-                                  .reduce(0, &:+)
+                                  .sum
   padding_size = [0, longest_filename_length - adjusted_byte_number].max
   padding_size + file_name.size
 end
