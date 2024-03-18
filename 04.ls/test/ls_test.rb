@@ -19,42 +19,70 @@ class LsTest < Minitest::Test
 
   def test_ls_specified_nonexistent_directory_and_file
     FileUtils.cd("#{@wd}/test/test_directory_1")
-    assert_equal "ls: test.rb: No such file or directory\n", `ruby #{@wd}/ls.rb test.rb`
+    expected = <<~LS_RESULT
+      ls: test.rb: No such file or directory
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb test.rb`
   end
 
   def test_ls_specified_multiple_nonexistent_directories_and_files
     FileUtils.cd("#{@wd}/test/test_directory_1")
-    assert_equal "ls: test.rb: No such file or directory\nls: test_2.rb: No such file or directory\n", `ruby #{@wd}/ls.rb test.rb test_2.rb`
+    expected = <<~LS_RESULT
+      ls: test.rb: No such file or directory
+      ls: test_2.rb: No such file or directory
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb test.rb test_2.rb`
   end
 
   def test_ls_one_file_exists
     FileUtils.cd("#{@wd}/test/test_directory_1")
-    assert_equal "test_1.txt\n", `ruby #{@wd}/ls.rb`
+    expected = <<~LS_RESULT
+      test_1.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb`
   end
 
   def test_ls_two_files_exist
     FileUtils.cd("#{@wd}/test/test_directory_2")
-    assert_equal "test_1.txt test_2.txt\n", `ruby #{@wd}/ls.rb`
+    expected = <<~LS_RESULT
+      test_1.txt test_2.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb`
   end
 
   def test_ls_three_files_exist
     FileUtils.cd("#{@wd}/test/test_directory_3")
-    assert_equal "test_1.txt test_2.txt test_3.txt\n", `ruby #{@wd}/ls.rb`
+    expected = <<~LS_RESULT
+      test_1.txt test_2.txt test_3.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb`
   end
 
   def test_ls_four_files_exist
     FileUtils.cd("#{@wd}/test/test_directory_4")
-    assert_equal "test_1.txt test_3.txt\ntest_2.txt test_4.txt\n", `ruby #{@wd}/ls.rb`
+    expected = <<~LS_RESULT
+      test_1.txt test_3.txt
+      test_2.txt test_4.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb`
   end
 
   def test_ls_five_files_exist
     FileUtils.cd("#{@wd}/test/test_directory_5")
-    assert_equal "test_1.txt test_3.txt test_5.txt\ntest_2.txt test_4.txt\n", `ruby #{@wd}/ls.rb`
+    expected = <<~LS_RESULT
+      test_1.txt test_3.txt test_5.txt
+      test_2.txt test_4.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb`
   end
 
   def test_ls_six_files_exist
     FileUtils.cd("#{@wd}/test/test_directory_6")
-    assert_equal "test_1.txt test_3.txt test_5.txt\ntest_2.txt test_4.txt test_6.txt\n", `ruby #{@wd}/ls.rb`
+    expected = <<~LS_RESULT
+      test_1.txt test_3.txt test_5.txt
+      test_2.txt test_4.txt test_6.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb`
   end
 
   def test_ls_long_name_file_exists
@@ -81,7 +109,10 @@ class LsTest < Minitest::Test
 
   def test_ls_specified_directory
     FileUtils.cd("#{@wd}/test/test_directory_exist_files_and_directories")
-    assert_equal "test_file_1.txt\n", `ruby #{@wd}/ls.rb TEST_DIR`
+    expected = <<~LS_RESULT
+      test_file_1.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb TEST_DIR`
   end
 
   def test_ls_specified_multiple_directories
