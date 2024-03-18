@@ -39,9 +39,8 @@ def display_directories(directories, args_count)
   directories.each.with_index(1) do |directory, i|
     puts "#{directory.path}:" if args_count > 1
 
-    directory_files = []
-    directory.each_child do |file|
-      directory_files << file unless /^\./.match?(file)
+    directory_files = directory.each_child.filter do |file|
+      !/^\./.match?(file)
     end
     directory_files_count = directory_files.size
 
