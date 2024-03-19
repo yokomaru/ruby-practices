@@ -149,7 +149,7 @@ class LsTest < Minitest::Test
   end
 
   def test_ls_specified_file_and_empty_directory
-    FileUtils.cd("#{@wd}")
+    FileUtils.cd(@wd.to_s)
     expected = <<~LS_RESULT
       ls.rb
 
