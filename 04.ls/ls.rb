@@ -32,47 +32,47 @@ def display_files(files)
   transpose_display_files(generated_files)
 end
 
-def display_directories(directories, args_count)
+def display_directories(directories, arg_counts)
   return if directories.empty?
 
-  directories_count = directories.size
+  directory_counts = directories.size
   directories.each.with_index(1) do |directory, i|
-    puts "#{directory.path}:" if args_count > 1
+    puts "#{directory.path}:" if arg_counts > 1
 
     directory_files = directory.each_child.filter do |file|
       !/^\./.match?(file)
     end
-    directory_files_count = directory_files.size
+    directory_file_counts = directory_files.size
 
-    if directory_files_count >= 1
+    if directory_file_counts >= 1
       generated_files = generate_display_files(directory_files)
       transpose_display_files(generated_files)
     end
 
-    puts if directories_count >= 1 && i < directories_count
+    puts if directory_counts >= 1 && i < directory_counts
   end
 end
 
 def generate_display_files(files)
   sorted_files = files.map { |file| file }.sort
   longest_filename_length = sorted_files.map(&:bytesize).max
-  max_displayable_files_count_in_column = calculate_max_displayable_files_count_in_column(longest_filename_length, files.size)
-  slice_display_files(sorted_files, max_displayable_files_count_in_column, longest_filename_length)
+  file_counts_in_column = calculate_file_counts_in_column(longest_filename_length, files.size)
+  slice_display_files(sorted_files, file_counts_in_column, longest_filename_length)
 end
 
-def calculate_max_displayable_files_count_in_column(longest_filename_length, files_count)
+def calculate_file_counts_in_column(filename_length, file_counts)
   terminal_width = `tput cols`.to_i # `tput cols` = 実行するターミナルの幅を取得
-  max_displayable_files_count_in_a_row = terminal_width / (longest_filename_length + BUFFER_WIDTH)
-  displayable_files_count_in_a_row = [max_displayable_files_count_in_a_row, MIN_COLUMN].max
-  displayable_files_count_in_a_row = [max_displayable_files_count_in_a_row, MAX_COLUMN].min
-  (files_count.to_f / displayable_files_count_in_a_row).ceil
+  max_file_counts_in_row = terminal_width / (filename_length + BUFFER_WIDTH)
+  min_file_counts_in_row = [max_file_counts_in_row, MIN_COLUMN].max
+  file_counts_in_row = [min_file_counts_in_row, MAX_COLUMN].min
+  (file_counts.to_f / file_counts_in_row).ceil
 end
 
-def slice_display_files(sorted_files, max_displayable_files_count, longest_filename_length)
-  sorted_files.each_slice(max_displayable_files_count).map do |files|
+def slice_display_files(sorted_files, file_counts_in_column, longest_filename_length)
+  sorted_files.each_slice(file_counts_in_column).map do |files|
     sliced_files = files.map { |file_name| file_name.ljust(calculate_align_left_width(file_name, longest_filename_length)) }
-    sliced_files_count = sliced_files.size
-    (max_displayable_files_count - sliced_files_count).times { sliced_files << '' } if sliced_files_count < max_displayable_files_count
+    sliced_file_counts = sliced_files.size
+    (file_counts_in_column - sliced_file_counts).times { sliced_files << '' } if sliced_file_counts < file_counts_in_column
     sliced_files
   end
 end
