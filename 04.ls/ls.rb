@@ -13,7 +13,7 @@ def main
   option_params = OptionParser.new
 
   options = {}
-  option_params.on('-a') { |_param| options[:a] = options }
+  option_params.on('-a') { |param| options[:a] = param }
   option_params.parse!(ARGV)
 
   args = ARGV.sort
