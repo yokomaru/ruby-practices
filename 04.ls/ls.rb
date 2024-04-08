@@ -7,7 +7,7 @@ MAX_COLUMN = 3
 MIN_COLUMN = 1
 BUFFER_WIDTH = 1
 NORMAL_BYTESIZE = 1
-MARTI_BYTESIZE = 2
+MULTI_BYTESIZE = 2
 
 def main
   option_params = OptionParser.new
@@ -84,7 +84,7 @@ end
 
 def calculate_align_left_width(file_name, longest_filename_length)
   adjusted_byte_number = file_name.each_char
-                                  .map { |char| char.bytesize == NORMAL_BYTESIZE ? NORMAL_BYTESIZE : MARTI_BYTESIZE }
+                                  .map { |char| char.bytesize == NORMAL_BYTESIZE ? NORMAL_BYTESIZE : MULTI_BYTESIZE }
                                   .sum
   padding_size = [0, longest_filename_length - adjusted_byte_number].max
   padding_size + file_name.size
