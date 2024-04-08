@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 MAX_COLUMN = 3
 MIN_COLUMN = 1
 BUFFER_WIDTH = 1
@@ -8,6 +10,12 @@ NORMAL_BYTESIZE = 1
 MARTI_BYTESIZE = 2
 
 def main
+  option_params = OptionParser.new
+
+  options = {}
+  option_params.on('-a') { |param| options[:a] = param }
+  option_params.parse!(ARGV)
+
   args = ARGV.sort
   arg_directories = []
   arg_files = []
@@ -22,7 +30,7 @@ def main
 
   display_files(arg_files)
   puts if !arg_directories.empty? && !arg_files.empty?
-  display_directories(arg_directories, args.size)
+  display_directories(arg_directories, args.size, options)
 end
 
 def display_files(files)
@@ -32,24 +40,17 @@ def display_files(files)
   transpose_display_files(generated_files)
 end
 
-def display_directories(directories, arg_counts)
+def display_directories(directories, arg_counts, options)
   return if directories.empty?
 
-  directory_counts = directories.size
   directories.each.with_index(1) do |directory, i|
     puts "#{directory.path}:" if arg_counts > 1
+    directory_files = directory.entries.filter { |file| options[:a] ? file : !/^\./.match?(file) }
+    next if directory_files.empty?
 
-    directory_files = directory.each_child.filter do |file|
-      !/^\./.match?(file)
-    end
-    directory_file_counts = directory_files.size
-
-    if directory_file_counts >= 1
-      generated_files = generate_display_files(directory_files)
-      transpose_display_files(generated_files)
-    end
-
-    puts if directory_counts >= 1 && i < directory_counts
+    generated_files = generate_display_files(directory_files)
+    transpose_display_files(generated_files)
+    puts if i < directories.size
   end
 end
 

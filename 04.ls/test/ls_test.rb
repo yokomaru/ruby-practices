@@ -194,4 +194,22 @@ class LsTest < Minitest::Test
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb`
   end
+
+  def test_ls_option_a
+    FileUtils.cd("#{@wd}/test/test_directory_0")
+    expected = <<~LS_RESULT
+      .  ..
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -a`
+  end
+
+  def test_ls_option_a_with_dotfile
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    expected = <<~LS_RESULT
+      .          test_1.txt test_4.txt
+      ..         test_2.txt test_5.txt
+      .testfile  test_3.txt test_6.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -a`
+  end
 end
