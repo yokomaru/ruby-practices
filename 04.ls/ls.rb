@@ -30,8 +30,10 @@ def main
     puts "ls: #{arg}: No such file or directory"
   end
 
-  display_files(arg_files)
-  puts if !arg_directories.empty? && !arg_files.empty?
+  sorted_arg_files = sort_files(arg_files, options[:r])
+
+  display_files(sorted_arg_files)
+  puts if !arg_directories.empty? && !sorted_arg_files.empty?
   display_directories(arg_directories, args.size, options)
 end
 
@@ -48,9 +50,10 @@ def display_directories(directories, arg_counts, options)
   directories.each.with_index(1) do |directory, i|
     puts "#{directory.path}:" if arg_counts > 1
     directory_files = directory.entries.filter { |file| options[:a] ? file : !/^\./.match?(file) }
-    next if directory_files.empty?
+    sorted_directory_files = sort_files(directory_files, options[:r])
+    next if sorted_directory_files.empty?
 
-    generated_files = generate_display_files(directory_files)
+    generated_files = generate_display_files(sorted_directory_files)
     transpose_display_files(generated_files)
     puts if i < directories.size
   end
@@ -89,6 +92,10 @@ end
 
 def transpose_display_files(display_files)
   display_files.transpose.each { |files| puts files.join(' ').strip }
+end
+
+def sort_files(files, option_r)
+  option_r ? files.sort.reverse : files.sort
 end
 
 main
