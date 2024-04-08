@@ -14,6 +14,8 @@ def main
 
   options = {}
   option_params.on('-a') { |param| options[:a] = param }
+  option_params.on('-r') { |param| options[:r] = param }
+
   option_params.parse!(ARGV)
 
   args = ARGV.sort
