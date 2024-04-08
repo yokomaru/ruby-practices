@@ -18,7 +18,7 @@ def main
 
   option_params.parse!(ARGV)
 
-  args = ARGV.sort
+  args = ARGV
   arg_directories = []
   arg_files = []
   arg_directories << Dir.open('.') if args.empty?
@@ -57,10 +57,9 @@ def display_directories(directories, arg_counts, options)
 end
 
 def generate_display_files(files)
-  sorted_files = files.map { |file| file }.sort
-  longest_filename_length = sorted_files.map(&:bytesize).max
+  longest_filename_length = files.map(&:bytesize).max
   file_counts_in_column = calculate_file_counts_in_column(longest_filename_length, files.size)
-  slice_display_files(sorted_files, file_counts_in_column, longest_filename_length)
+  slice_display_files(files, file_counts_in_column, longest_filename_length)
 end
 
 def calculate_file_counts_in_column(filename_length, file_counts)
