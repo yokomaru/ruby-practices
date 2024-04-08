@@ -212,4 +212,14 @@ class LsTest < Minitest::Test
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -a`
   end
+
+  def test_ls_option_r_with_option_a
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    expected = <<~LS_RESULT
+      test_6.txt test_3.txt .testfile
+      test_5.txt test_2.txt ..
+      test_4.txt test_1.txt .
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -a -r`
+  end
 end
