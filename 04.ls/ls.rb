@@ -9,6 +9,37 @@ MIN_COLUMN = 1
 BUFFER_WIDTH = 1
 NORMAL_BYTESIZE = 1
 MULTI_BYTESIZE = 2
+STICKEY_PERMISSION = "1"
+SUID_PERMISSION = "2"
+SGID_PERMISSION = "4"
+
+FILE_TYPE = {
+  '01' => 'p',
+  '02' => 'c',
+  '04' => 'd',
+  '06' => 'b',
+  '10' => '-',
+  '12' => 'l',
+  '14' => 's'
+}
+
+PERMISSION = {
+  '0' => '---',
+  '1' => '--x',
+  '2' => '-w-',
+  '3' => '-wx',
+  '4' => 'r--',
+  '5' => 'r-x',
+  '6' => 'rw-',
+  '7' => 'rwx'
+}
+
+SPECIAL_PERMISSION = {
+  '0' => '-',
+  '1' => 't',
+  '2' => 's',
+  '4' => 's',
+}
 
 def main
   option_params = OptionParser.new
