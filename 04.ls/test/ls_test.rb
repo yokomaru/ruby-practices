@@ -222,4 +222,20 @@ class LsTest < Minitest::Test
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -a -r`
   end
+
+  def test_ls_option_l
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    # xxxxxxxxxx は管理者名の名前のためマスク
+    # 実行時に変更する
+    expected = <<~LS_RESULT
+      total 0
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_1_テスト.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_2.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_3.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_4.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_5.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_6.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -l`
+  end
 end
