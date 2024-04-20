@@ -15,6 +15,7 @@ def main
   options = {}
   option_params.on('-a') { |param| options[:a] = param }
   option_params.on('-r') { |param| options[:r] = param }
+  option_params.on('-l') { |param| options[:r] = param }
 
   option_params.parse!(ARGV)
 
@@ -49,12 +50,14 @@ def display_directories(directories, arg_counts, options)
 
   directories.each.with_index(1) do |directory, i|
     puts "#{directory.path}:" if arg_counts > 1
+    # ls -lをしていない時
     directory_files = directory.entries.filter { |file| options[:a] ? file : !/^\./.match?(file) }
     sorted_directory_files = sort_files(directory_files, options[:r])
     next if sorted_directory_files.empty?
 
     generated_files = generate_display_files(sorted_directory_files)
     transpose_display_files(generated_files)
+    #
     puts if i < directories.size
   end
 end
