@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'optparse'
+require "etc"
 
 MAX_COLUMN = 3
 MIN_COLUMN = 1
