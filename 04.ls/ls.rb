@@ -65,16 +65,23 @@ def main
 
   sorted_arg_files = sort_files(arg_files, options[:r])
 
-  display_files(sorted_arg_files)
+  display_files(sorted_arg_files, options)
   puts if !arg_directories.empty? && !sorted_arg_files.empty?
   display_directories(arg_directories, args.size, options)
 end
 
-def display_files(files)
+def display_files(files, options)
   return if files.empty?
-
-  generated_files = generate_display_files(files)
-  transpose_display_files(generated_files)
+  if options[:l]
+    longformat_files = files.map { |file| generate_longformat_files(file, File.dirname(file)) }
+    longest_bytesizes = fetch_longest_bytesizes(longformat_files)
+    longformat_files.each do |longformat_file|
+      puts display_longformat_file(longformat_file, longest_bytesizes)
+    end
+  else
+    generated_files = generate_display_files(files)
+    transpose_display_files(generated_files)
+  end
 end
 
 def display_directories(directories, arg_counts, options)
