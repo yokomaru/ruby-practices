@@ -89,14 +89,20 @@ def display_directories(directories, arg_counts, options)
 
   directories.each.with_index(1) do |directory, i|
     puts "#{directory.path}:" if arg_counts > 1
-    # ls -lをしていない時
     directory_files = directory.entries.filter { |file| options[:a] ? file : !/^\./.match?(file) }
     sorted_directory_files = sort_files(directory_files, options[:r])
     next if sorted_directory_files.empty?
-
-    generated_files = generate_display_files(sorted_directory_files)
-    transpose_display_files(generated_files)
-    #
+    if options[:l]
+      longformat_files = sorted_directory_files.map { |file| generate_longformat_files(file, directory.path) }
+      longest_bytesizes = fetch_longest_bytesizes(longformat_files)
+      puts "total #{longformat_files.sum { |file| file[:blocks]}}"
+      longformat_files.each do |longformat_file|
+        puts display_longformat_file(longformat_file, longest_bytesizes)
+      end
+    else
+      generated_files = generate_display_files(sorted_directory_files)
+      transpose_display_files(generated_files)
+    end
     puts if i < directories.size
   end
 end
