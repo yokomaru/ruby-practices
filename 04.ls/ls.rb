@@ -133,4 +133,48 @@ def sort_files(files, option_r)
   option_r ? files.sort.reverse : files.sort
 end
 
+def generate_longformat_files(file, directory)
+  file_stat = File::Stat.new(File.absolute_path(file, directory))
+  file_stat_mode = file_stat.mode.to_s(8).rjust(6, "0")
+  file_type = file_stat_mode.slice(0,2)
+  special_permission = file_stat_mode.slice(2)
+  owner_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(3), STICKEY_PERMISSION)
+  group_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(4), SUID_PERMISSION)
+  other_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(5), SGID_PERMISSION)
+  {
+    filemode: "#{FILE_TYPE[file_type]}#{owner_permission_string}#{group_permission_string}#{other_permission_string}",
+    hardlink_nums:file_stat.nlink.to_s,
+    owner_name: Etc.getpwuid(file_stat.uid).name,
+    group_name: Etc.getgrgid(file_stat.gid).name,
+    bytesize: file_stat.size.to_s,
+    latest_modify_datetime: file_stat.mtime.strftime(" %-m %-d %H:%M"),
+    filename: file,
+    blocks: file_stat.blocks
+  }
+end
+
+def fetch_longest_bytesizes(hash)
+  {
+    hardlink_num: hash.map { |h| h[:hardlink_nums].to_s.bytesize}.max,
+    owner_name: hash.map { |h| h[:owner_name].bytesize}.max,
+    group_name: hash.map { |h| h[:group_name].bytesize}.max,
+    bytesize: hash.map { |h| h[:bytesize].to_s.bytesize}.max,
+    filename: hash.map { |h| h[:filename].bytesize}.max
+  }
+end
+
+def display_longformat_file(hash, longest_bytesizes)
+  "#{hash[:filemode]} "\
+  "#{hash[:hardlink_nums].rjust(longest_bytesizes[:hardlink_num] + 1)}"\
+  "#{hash[:owner_name].rjust(longest_bytesizes[:owner_name] + 1)} "\
+  "#{hash[:group_name].rjust(longest_bytesizes[:group_name] + 1)} "\
+  "#{hash[:bytesize].rjust(longest_bytesizes[:bytesize] + 1)} "\
+  "#{hash[:latest_modify_datetime]} #{hash[:filename]}"
+end
+
+def conversion_special_permission(special_permission, permission, target_permission)
+  return PERMISSION[permission] if special_permission != target_permission
+  permission.to_i.odd? ? PERMISSION[permission].sub(/x$/, SPECIAL_PERMISSION[special_permission]) : PERMISSION[permission].sub(/-$/, SPECIAL_PERMISSION[special_permission].upcase)
+end
+
 main
