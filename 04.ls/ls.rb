@@ -2,16 +2,16 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require "etc"
+require 'etc'
 
 MAX_COLUMN = 3
 MIN_COLUMN = 1
 BUFFER_WIDTH = 1
 NORMAL_BYTESIZE = 1
 MULTI_BYTESIZE = 2
-STICKEY_PERMISSION = "1"
-SUID_PERMISSION = "2"
-SGID_PERMISSION = "4"
+STICKEY_PERMISSION = '1'
+SUID_PERMISSION = '2'
+SGID_PERMISSION = '4'
 
 FILE_TYPE = {
   '01' => 'p',
@@ -21,7 +21,7 @@ FILE_TYPE = {
   '10' => '-',
   '12' => 'l',
   '14' => 's'
-}
+}.freeze
 
 PERMISSION = {
   '0' => '---',
@@ -32,14 +32,14 @@ PERMISSION = {
   '5' => 'r-x',
   '6' => 'rw-',
   '7' => 'rwx'
-}
+}.freeze
 
 SPECIAL_PERMISSION = {
   '0' => '-',
   '1' => 't',
   '2' => 's',
-  '4' => 's',
-}
+  '4' => 's'
+}.freeze
 
 def main
   option_params = OptionParser.new
@@ -72,6 +72,7 @@ end
 
 def display_files(files, options)
   return if files.empty?
+
   if options[:l]
     longformat_files = files.map { |file| generate_longformat_files(file, File.dirname(file)) }
     longest_bytesizes = fetch_longest_bytesizes(longformat_files)
@@ -92,10 +93,11 @@ def display_directories(directories, arg_counts, options)
     directory_files = directory.entries.filter { |file| options[:a] ? file : !/^\./.match?(file) }
     sorted_directory_files = sort_files(directory_files, options[:r])
     next if sorted_directory_files.empty?
+
     if options[:l]
       longformat_files = sorted_directory_files.map { |file| generate_longformat_files(file, directory.path) }
       longest_bytesizes = fetch_longest_bytesizes(longformat_files)
-      puts "total #{longformat_files.sum { |file| file[:blocks]}}"
+      puts "total #{longformat_files.sum { |file| file[:blocks] }}"
       longformat_files.each do |longformat_file|
         puts display_longformat_file(longformat_file, longest_bytesizes)
       end
@@ -148,19 +150,19 @@ end
 
 def generate_longformat_files(file, directory)
   file_stat = File::Stat.new(File.absolute_path(file, directory))
-  file_stat_mode = file_stat.mode.to_s(8).rjust(6, "0")
-  file_type = file_stat_mode.slice(0,2)
+  file_stat_mode = file_stat.mode.to_s(8).rjust(6, '0')
+  file_type = file_stat_mode.slice(0, 2)
   special_permission = file_stat_mode.slice(2)
   owner_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(3), STICKEY_PERMISSION)
   group_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(4), SUID_PERMISSION)
   other_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(5), SGID_PERMISSION)
   {
     filemode: "#{FILE_TYPE[file_type]}#{owner_permission_string}#{group_permission_string}#{other_permission_string}",
-    hardlink_nums:file_stat.nlink.to_s,
+    hardlink_nums: file_stat.nlink.to_s,
     owner_name: Etc.getpwuid(file_stat.uid).name,
     group_name: Etc.getgrgid(file_stat.gid).name,
     bytesize: file_stat.size.to_s,
-    latest_modify_datetime: file_stat.mtime.strftime(" %-m %-d %H:%M"),
+    latest_modify_datetime: file_stat.mtime.strftime(' %-m %-d %H:%M'),
     filename: file,
     blocks: file_stat.blocks
   }
@@ -168,11 +170,11 @@ end
 
 def fetch_longest_bytesizes(hash)
   {
-    hardlink_num: hash.map { |h| h[:hardlink_nums].to_s.bytesize}.max,
-    owner_name: hash.map { |h| h[:owner_name].bytesize}.max,
-    group_name: hash.map { |h| h[:group_name].bytesize}.max,
-    bytesize: hash.map { |h| h[:bytesize].to_s.bytesize}.max,
-    filename: hash.map { |h| h[:filename].bytesize}.max
+    hardlink_num: hash.map { |h| h[:hardlink_nums].to_s.bytesize }.max,
+    owner_name: hash.map { |h| h[:owner_name].bytesize }.max,
+    group_name: hash.map { |h| h[:group_name].bytesize }.max,
+    bytesize: hash.map { |h| h[:bytesize].to_s.bytesize }.max,
+    filename: hash.map { |h| h[:filename].bytesize }.max
   }
 end
 
@@ -187,7 +189,14 @@ end
 
 def conversion_special_permission(special_permission, permission, target_permission)
   return PERMISSION[permission] if special_permission != target_permission
-  permission.to_i.odd? ? PERMISSION[permission].sub(/x$/, SPECIAL_PERMISSION[special_permission]) : PERMISSION[permission].sub(/-$/, SPECIAL_PERMISSION[special_permission].upcase)
+
+  if permission.to_i.odd?
+    PERMISSION[permission].sub(/x$/,
+                               SPECIAL_PERMISSION[special_permission])
+  else
+    PERMISSION[permission].sub(/-$/,
+                               SPECIAL_PERMISSION[special_permission].upcase)
+  end
 end
 
 main
