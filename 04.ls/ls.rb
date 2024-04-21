@@ -74,11 +74,7 @@ def display_files(files, options)
   return if files.empty?
 
   if options[:l]
-    longformat_files = files.map { |file| generate_longformat_files(file, File.dirname(file)) }
-    longest_bytesizes = fetch_longest_bytesizes(longformat_files)
-    longformat_files.each do |longformat_file|
-      puts display_longformat_file(longformat_file, longest_bytesizes)
-    end
+    display_longformat_file(files, is_directory: false)
   else
     generated_files = generate_display_files(files)
     transpose_display_files(generated_files)
@@ -95,12 +91,7 @@ def display_directories(directories, arg_counts, options)
     next if sorted_directory_files.empty?
 
     if options[:l]
-      longformat_files = sorted_directory_files.map { |file| generate_longformat_files(file, directory.path) }
-      longest_bytesizes = fetch_longest_bytesizes(longformat_files)
-      puts "total #{longformat_files.sum { |file| file[:blocks] }}"
-      longformat_files.each do |longformat_file|
-        puts display_longformat_file(longformat_file, longest_bytesizes)
-      end
+      display_longformat_file(sorted_directory_files, is_directory: true)
     else
       generated_files = generate_display_files(sorted_directory_files)
       transpose_display_files(generated_files)
@@ -146,6 +137,13 @@ end
 
 def sort_files(files, option_r)
   option_r ? files.sort.reverse : files.sort
+end
+
+def display_longformat_file(files, is_directory: false)
+  longformat_files = files.map { |file| generate_longformat_files(file, File.dirname(file)) }
+  longest_bytesizes = fetch_longest_bytesizes(longformat_files)
+  puts "total #{longformat_files.sum { |file| file[:blocks] }}" if is_directory
+  longformat_files.each { |longformat_file| puts generate_longformat_line(longformat_file, longest_bytesizes) }
 end
 
 def generate_longformat_files(file, directory)
