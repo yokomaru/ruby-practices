@@ -86,7 +86,7 @@ def display_directories(directories, arg_counts, options)
 
   directories.each.with_index(1) do |directory, i|
     puts "#{directory.path}:" if arg_counts > 1
-    directory_files = directory.entries.filter { |file| options[:a] ? file : !/^\./.match?(file) }
+    directory_files = generate_directory_files(directory, options[:a])
     sorted_directory_files = sort_files(directory_files, options[:r])
     next if sorted_directory_files.empty?
 
@@ -133,6 +133,10 @@ end
 
 def transpose_display_files(display_files)
   display_files.transpose.each { |files| puts files.join(' ').strip }
+end
+
+def generate_directory_files(directory, option_a)
+  directory.entries.filter { |file| option_a ? file : !/^\./.match?(file) }
 end
 
 def sort_files(files, option_r)
