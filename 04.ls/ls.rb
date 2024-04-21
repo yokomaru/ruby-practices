@@ -176,13 +176,13 @@ def fetch_longest_bytesizes(hash)
   }
 end
 
-def display_longformat_file(hash, longest_bytesizes)
-  "#{hash[:filemode]} "\
-  "#{hash[:hardlink_nums].rjust(longest_bytesizes[:hardlink_num] + 1)}"\
-  "#{hash[:owner_name].rjust(longest_bytesizes[:owner_name] + 1)} "\
-  "#{hash[:group_name].rjust(longest_bytesizes[:group_name] + 1)} "\
-  "#{hash[:bytesize].rjust(longest_bytesizes[:bytesize] + 1)} "\
-  "#{hash[:latest_modify_datetime]} #{hash[:filename]}"
+def generate_longformat_line(longformat_file, longest_bytesizes)
+  "#{longformat_file[:filemode]} "\
+  "#{longformat_file[:hardlink_nums].rjust(longest_bytesizes[:hardlink_num] + BUFFER_WIDTH)}"\
+  "#{longformat_file[:owner_name].rjust(longest_bytesizes[:owner_name] + BUFFER_WIDTH)} "\
+  "#{longformat_file[:group_name].rjust(longest_bytesizes[:group_name] + BUFFER_WIDTH)} "\
+  "#{longformat_file[:bytesize].rjust(longest_bytesizes[:bytesize] + BUFFER_WIDTH)} "\
+  "#{longformat_file[:latest_modify_datetime]} #{longformat_file[:filename]}"
 end
 
 def conversion_special_permission(special_permission, permission, target_permission)
