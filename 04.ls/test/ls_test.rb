@@ -261,4 +261,52 @@ class LsTest < Minitest::Test
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -l test/test_directory_option_l`
   end
+
+  def test_ls_option_permission_0_and_not_special_permission
+    # パーミッション0: --- 全ての権限なし
+    # 特殊権限なし
+    assert_equal '---',  conversion_special_permission('0', '0', '1')
+  end
+
+  def test_ls_option_permission_1_and_not_special_permission
+    # パーミッション1: --x 実行のみ
+    # 特殊権限なし
+    assert_equal '--x',  conversion_special_permission('0', '1', '1')
+  end
+
+  def test_ls_option_permission_2_and_sticky_bit_permission
+    # パーミッション2: -w- 書き込みと実行
+    # 特殊権限 スティッキービット T
+    assert_equal '-wT',  conversion_special_permission('1', '2', '1')
+  end
+
+  def test_ls_option_permission_3_and_sticky_bit_permission
+    # パーミッション3: -wx 書き込みと実行
+    # 特殊権限 スティッキービット t
+    assert_equal '-wt',  conversion_special_permission('1', '3', '1')
+  end
+
+  def test_ls_option_permission_4_and_sgid_permission
+    # パーミッション4: r-- 読み込みのみ
+    # 特殊権限 SGID S
+    assert_equal 'r-S',  conversion_special_permission('2', '4', '2')
+  end
+
+  def test_ls_option_conversion_special_permission_to_permission_5_and_sgid_permission
+    # パーミッション5: r-x 読み込み＋実行
+    # 特殊権限 SGID s
+    assert_equal 'r-s',  conversion_special_permission('2', '5', '2')
+  end
+
+  def test_ls_option_conversion_special_permission_to_permission_6_and_suid_permission
+    # パーミッション6: rw- 読み込み＋書き込みのみ
+    # 特殊権限 SUID S
+    assert_equal 'rwS',  conversion_special_permission('4', '6', '4')
+  end
+
+  def test_ls_option_conversion_special_permission_to_permission_7_and_suid_permission
+    # パーミッション7: rwx 読み込み＋書き込み＋実行
+    # 特殊権限 SUID s
+    assert_equal 'rws',  conversion_special_permission('4', '7', '4')
+  end
 end
