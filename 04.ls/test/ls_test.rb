@@ -225,17 +225,40 @@ class LsTest < Minitest::Test
 
   def test_ls_option_l
     FileUtils.cd("#{@wd}/test/test_directory_dotfile")
-    # xxxxxxxxxx は管理者名の名前のためマスク
+    # xxxxxxxxxxx は管理者名の名前のためマスク
     # 実行時に変更する
     expected = <<~LS_RESULT
       total 0
-      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_1_テスト.txt
-      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_2.txt
-      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_3.txt
-      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_4.txt
-      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_5.txt
-      -rw-r--r--  1 xxxxxxxxxx  staff  0  3 28 21:20 test_6.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_1.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_2.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_3.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_4.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_5.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_6.txt
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -l`
+  end
+
+  def test_ls_option_l_specify_file
+    FileUtils.cd(@wd.to_s)
+    # xxxxxxxxxxx は管理者名の名前のためマスク
+    # 実行時に変更する
+    expected = <<~LS_RESULT
+      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test/test_directory_option_l/test_1.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -l test/test_directory_option_l/test_1.txt`
+  end
+
+  def test_ls_option_l_specify_directory
+    FileUtils.cd(@wd.to_s)
+    # xxxxxxxxxx は管理者名の名前のためマスク
+    # 実行時に変更する
+    expected = <<~LS_RESULT
+      total 16
+      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test_1.txt
+      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test_2.txt
+      drwxr-xr-x  3 xxxxxxxxxxx  staff   96  4 23 17:18 test_dir
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -l test/test_directory_option_l`
   end
 end
