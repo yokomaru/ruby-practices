@@ -146,26 +146,26 @@ def sort_files(files, option_r)
 end
 
 def display_longformat_files(files)
-  longformat_files = files.map { |file| generate_longformat_files(file, File.path(file)) }
-  longest_bytesizes = fetch_longest_bytesizes(longformat_files)
+  longformat_files = files.map { |file| generate_longformat_file(file, File.path(file)) }
+  longest_bytesizes = generate_longest_bytesizes(longformat_files)
   longformat_files.each { |longformat_file| puts generate_longformat_file_line(longformat_file, longest_bytesizes) }
 end
 
 def display_longformat_directory_files(files, path)
-  longformat_files = files.map { |file| generate_longformat_files(file, File.absolute_path(file, path)) }
-  longest_bytesizes = fetch_longest_bytesizes(longformat_files)
+  longformat_files = files.map { |file| generate_longformat_file(file, File.absolute_path(file, path)) }
+  longest_bytesizes = generate_longest_bytesizes(longformat_files)
   puts "total #{longformat_files.sum { |file| file[:blocks] }}"
   longformat_files.each { |longformat_file| puts generate_longformat_file_line(longformat_file, longest_bytesizes) }
 end
 
-def generate_longformat_files(file, file_path)
+def generate_longformat_file(file, file_path)
   file_stat = File::Stat.new(file_path)
   file_stat_mode = file_stat.mode.to_s(8).rjust(6, '0')
   file_type = file_stat_mode.slice(0, 2)
   special_permission = file_stat_mode.slice(2)
-  owner_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(3), SUID_PERMISSION)
-  group_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(4), SGID_PERMISSION)
-  other_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(5), STICKEY_PERMISSION)
+  owner_permission_string = convert_permission(special_permission, file_stat_mode.slice(3), SUID_PERMISSION)
+  group_permission_string = convert_permission(special_permission, file_stat_mode.slice(4), SGID_PERMISSION)
+  other_permission_string = convert_permission(special_permission, file_stat_mode.slice(5), STICKEY_PERMISSION)
   {
     filemode: "#{FILE_TYPE[file_type]}#{owner_permission_string}#{group_permission_string}#{other_permission_string}",
     hardlink_nums: file_stat.nlink.to_s,
@@ -180,7 +180,7 @@ def generate_longformat_files(file, file_path)
   }
 end
 
-def fetch_longest_bytesizes(hash)
+def generate_longest_bytesizes(hash)
   {
     hardlink_num: hash.map { |h| h[:hardlink_nums].to_s.bytesize }.max,
     owner_name: hash.map { |h| h[:owner_name].bytesize }.max,
@@ -202,7 +202,7 @@ def generate_longformat_file_line(longformat_file, longest_bytesizes)
   "#{longformat_file[:filename]}"
 end
 
-def conversion_special_permission(special_permission, permission, target_permission)
+def convert_permission(special_permission, permission, target_permission)
   return PERMISSION[permission] if special_permission != target_permission
 
   if permission.to_i.odd?
