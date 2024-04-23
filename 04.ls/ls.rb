@@ -7,6 +7,8 @@ require 'etc'
 MAX_COLUMN = 3
 MIN_COLUMN = 1
 BUFFER_WIDTH = 1
+TWO_BUFFER_WIDTH = 2
+FOUR_BUFFER_WIDTH = 4
 NORMAL_BYTESIZE = 1
 MULTI_BYTESIZE = 2
 STICKEY_PERMISSION = '1'
@@ -146,7 +148,7 @@ end
 def display_longformat_files(files)
   longformat_files = files.map { |file| generate_longformat_files(file, File.path(file)) }
   longest_bytesizes = fetch_longest_bytesizes(longformat_files)
-  longformat_files.each { |longformat_file| puts generate_longformat_line(longformat_file, longest_bytesizes) }
+  longformat_files.each { |longformat_file| puts generate_longformat_file_line(longformat_file, longest_bytesizes) }
 end
 
 def display_longformat_directory_files(files, path)
@@ -188,13 +190,16 @@ def fetch_longest_bytesizes(hash)
   }
 end
 
-def generate_longformat_line(longformat_file, longest_bytesizes)
+def generate_longformat_file_line(longformat_file, longest_bytesizes)
   "#{longformat_file[:filemode]} "\
   "#{longformat_file[:hardlink_nums].rjust(longest_bytesizes[:hardlink_num] + BUFFER_WIDTH)}"\
   "#{longformat_file[:owner_name].rjust(longest_bytesizes[:owner_name] + BUFFER_WIDTH)} "\
   "#{longformat_file[:group_name].rjust(longest_bytesizes[:group_name] + BUFFER_WIDTH)} "\
   "#{longformat_file[:bytesize].rjust(longest_bytesizes[:bytesize] + BUFFER_WIDTH)} "\
-  "#{longformat_file[:latest_modify_datetime]} #{longformat_file[:filename]}"
+  "#{longformat_file[:latest_modify_month].rjust(TWO_BUFFER_WIDTH)} "\
+  "#{longformat_file[:latest_modify_date].rjust(TWO_BUFFER_WIDTH)} "\
+  "#{longformat_file[:latest_modify_time].rjust(FOUR_BUFFER_WIDTH)} "\
+  "#{longformat_file[:filename]}"
 end
 
 def conversion_special_permission(special_permission, permission, target_permission)
