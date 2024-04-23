@@ -156,21 +156,23 @@ def display_longformat_directory_files(files, path)
   longformat_files.each { |longformat_file| puts generate_longformat_file_line(longformat_file, longest_bytesizes) }
 end
 
-def generate_longformat_files(file, directory)
-  file_stat = File::Stat.new(File.absolute_path(file, directory))
+def generate_longformat_files(file, file_path)
+  file_stat = File::Stat.new(file_path)
   file_stat_mode = file_stat.mode.to_s(8).rjust(6, '0')
   file_type = file_stat_mode.slice(0, 2)
   special_permission = file_stat_mode.slice(2)
-  owner_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(3), STICKEY_PERMISSION)
-  group_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(4), SUID_PERMISSION)
-  other_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(5), SGID_PERMISSION)
+  owner_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(3), SUID_PERMISSION)
+  group_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(4), SGID_PERMISSION)
+  other_permission_string = conversion_special_permission(special_permission, file_stat_mode.slice(5), STICKEY_PERMISSION)
   {
     filemode: "#{FILE_TYPE[file_type]}#{owner_permission_string}#{group_permission_string}#{other_permission_string}",
     hardlink_nums: file_stat.nlink.to_s,
     owner_name: Etc.getpwuid(file_stat.uid).name,
     group_name: Etc.getgrgid(file_stat.gid).name,
     bytesize: file_stat.size.to_s,
-    latest_modify_datetime: file_stat.mtime.strftime(' %-m %-d %H:%M'),
+    latest_modify_month: file_stat.mtime.strftime('%-m'),
+    latest_modify_date: file_stat.mtime.strftime('%-d'),
+    latest_modify_time: file_stat.mtime.strftime('%R'),
     filename: file,
     blocks: file_stat.blocks
   }
