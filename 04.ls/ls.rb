@@ -180,13 +180,13 @@ def generate_longformat_file(file, file_path)
   }
 end
 
-def generate_longest_bytesizes(hash)
+def generate_longest_bytesizes(files)
   {
-    hardlink_num: hash.map { |h| h[:hardlink_nums].to_s.bytesize }.max,
-    owner_name: hash.map { |h| h[:owner_name].bytesize }.max,
-    group_name: hash.map { |h| h[:group_name].bytesize }.max,
-    bytesize: hash.map { |h| h[:bytesize].to_s.bytesize }.max,
-    filename: hash.map { |h| h[:filename].bytesize }.max
+    hardlink_num: files.map { |file| file[:hardlink_nums].to_s.bytesize }.max,
+    owner_name: files.map { |file| file[:owner_name].bytesize }.max,
+    group_name: files.map { |file| file[:group_name].bytesize }.max,
+    bytesize: files.map { |file| file[:bytesize].to_s.bytesize }.max,
+    filename: files.map { |file| file[:filename].bytesize }.max
   }
 end
 
