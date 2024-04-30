@@ -199,15 +199,15 @@ def generate_longest_bytesizes(files)
 end
 
 def generate_longformat_file_line(longformat_file, longest_bytesizes)
-  "#{longformat_file[:filemode]} "\
-  "#{longformat_file[:hardlink_nums].rjust(longest_bytesizes[:hardlink_num] + BUFFER_WIDTH)}"\
-  "#{longformat_file[:owner_name].rjust(longest_bytesizes[:owner_name] + BUFFER_WIDTH)} "\
-  "#{longformat_file[:group_name].rjust(longest_bytesizes[:group_name] + BUFFER_WIDTH)} "\
-  "#{longformat_file[:bytesize].rjust(longest_bytesizes[:bytesize] + BUFFER_WIDTH)} "\
-  "#{longformat_file[:latest_modify_month].rjust(TWO_BUFFER_WIDTH)} "\
-  "#{longformat_file[:latest_modify_date].rjust(TWO_BUFFER_WIDTH)} "\
-  "#{longformat_file[:latest_modify_time].rjust(FOUR_BUFFER_WIDTH)} "\
-  "#{longformat_file[:filename]}"
+  [longformat_file[:filemode],
+  longformat_file[:hardlink_nums].rjust(longest_bytesizes[:hardlink_nums] + BUFFER_WIDTH),
+  longformat_file[:owner_name].rjust(longest_bytesizes[:owner_name]),
+  longformat_file[:group_name].rjust(longest_bytesizes[:group_name] + BUFFER_WIDTH),
+  longformat_file[:bytesize].rjust(longest_bytesizes[:bytesize] + BUFFER_WIDTH),
+  longformat_file[:latest_modify_month].rjust(TWO_BUFFER_WIDTH),
+  longformat_file[:latest_modify_date].rjust(TWO_BUFFER_WIDTH),
+  longformat_file[:latest_modify_time].rjust(FOUR_BUFFER_WIDTH),
+  longformat_file[:filename]].join(" ")
 end
 
 def convert_permission(special_permission, permission, target_permission)
