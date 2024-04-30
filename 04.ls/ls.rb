@@ -209,13 +209,8 @@ end
 def convert_permission(special_permission, permission, target_permission)
   return PERMISSION[permission] if special_permission != target_permission
 
-  if permission.to_i.odd?
-    PERMISSION[permission].sub(/x$/,
-                               SPECIAL_PERMISSION[special_permission])
-  else
-    PERMISSION[permission].sub(/-$/,
-                               SPECIAL_PERMISSION[special_permission].upcase)
-  end
+  special_permission_character = permission.to_i.odd? ? SPECIAL_PERMISSION[special_permission] : SPECIAL_PERMISSION[special_permission].upcase
+  PERMISSION[permission].chop + special_permission_character
 end
 
 main
