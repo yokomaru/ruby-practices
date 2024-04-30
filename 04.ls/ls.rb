@@ -189,13 +189,9 @@ def filemode(file_stat)
 end
 
 def generate_longest_bytesizes(files)
-  {
-    hardlink_num: files.map { |file| file[:hardlink_nums].to_s.bytesize }.max,
-    owner_name: files.map { |file| file[:owner_name].bytesize }.max,
-    group_name: files.map { |file| file[:group_name].bytesize }.max,
-    bytesize: files.map { |file| file[:bytesize].to_s.bytesize }.max,
-    filename: files.map { |file| file[:filename].bytesize }.max
-  }
+  %i[hardlink_nums owner_name group_name bytesize filename].each_with_object({}) do |sym, hash|
+    hash[sym] = files.map { |file| file[sym].to_s.bytesize }.max
+  end
 end
 
 def generate_longformat_file_line(longformat_file, longest_bytesizes)
