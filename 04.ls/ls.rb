@@ -189,7 +189,8 @@ def filemode(file_stat)
 end
 
 def generate_longest_bytesizes(files)
-  %i[hardlink_nums owner_name group_name bytesize filename].each_with_object({}) do |sym, hash|
+  # hardlink_nums owner_name group_name bytesizeはファイル名の最大文字数で右詰めするため取得
+  %i[hardlink_nums owner_name group_name bytesize].each_with_object({}) do |sym, hash|
     hash[sym] = files.map { |file| file[sym].to_s.bytesize }.max
   end
 end
