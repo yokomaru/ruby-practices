@@ -197,12 +197,12 @@ def generate_longest_bytesizes(files)
 end
 
 def generate_longformat_file_line(longformat_file, longest_bytesizes)
-  longformat_file.map do |k, v|
-    next if k == :blocks
+  longformat_file.map do |key, value|
+    next if key == :blocks #blocksは表示には使用しないためスキップする
 
     # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
-    buffer_space = ' ' if %i[filemode owner_name group_name].include?(k)
-    longest_bytesizes[k] ? v.rjust(longest_bytesizes[k]) + buffer_space.to_s : v + buffer_space.to_s
+    buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
+    longest_bytesizes[key] ? value.rjust(longest_bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
   end.join(' ')
 end
 
