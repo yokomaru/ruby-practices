@@ -167,9 +167,7 @@ def generate_longformat_file(file, file_path)
     owner_name: Etc.getpwuid(file_stat.uid).name,
     group_name: Etc.getgrgid(file_stat.gid).name,
     bytesize: file_stat.size.to_s,
-    latest_modify_month: file_stat.mtime.strftime('%-m'),
-    latest_modify_date: file_stat.mtime.strftime('%-d'),
-    latest_modify_time: file_stat.mtime.strftime('%R'),
+    latest_modify_datetime: file_stat.mtime.strftime('%_m %e %H:%M'),
     filename: file,
     blocks: file_stat.blocks
   }
