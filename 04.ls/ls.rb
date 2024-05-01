@@ -7,8 +7,6 @@ require 'etc'
 MAX_COLUMN = 3
 MIN_COLUMN = 1
 BUFFER_WIDTH = 1
-TWO_BUFFER_WIDTH = 2
-FOUR_BUFFER_WIDTH = 4
 NORMAL_BYTESIZE = 1
 MULTI_BYTESIZE = 2
 STICKEY_PERMISSION = '1'
@@ -194,15 +192,13 @@ def generate_longest_bytesizes(files)
 end
 
 def generate_longformat_file_line(longformat_file, longest_bytesizes)
-  [longformat_file[:filemode],
-  longformat_file[:hardlink_nums].rjust(longest_bytesizes[:hardlink_nums] + BUFFER_WIDTH),
-  longformat_file[:owner_name].rjust(longest_bytesizes[:owner_name]),
-  longformat_file[:group_name].rjust(longest_bytesizes[:group_name] + BUFFER_WIDTH),
-  longformat_file[:bytesize].rjust(longest_bytesizes[:bytesize] + BUFFER_WIDTH),
-  longformat_file[:latest_modify_month].rjust(TWO_BUFFER_WIDTH),
-  longformat_file[:latest_modify_date].rjust(TWO_BUFFER_WIDTH),
-  longformat_file[:latest_modify_time].rjust(FOUR_BUFFER_WIDTH),
-  longformat_file[:filename]].join(" ")
+  longformat_file.map do |k, v|
+    next if k == :blocks
+
+    # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
+    buffer_space = ' ' if %i[filemode owner_name group_name].include?(k)
+    longest_bytesizes[k] ? v.rjust(longest_bytesizes[k]) + buffer_space.to_s : v + buffer_space.to_s
+  end.join(' ')
 end
 
 def convert_permission(special_permission, permission, target_permission)
