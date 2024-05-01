@@ -203,7 +203,7 @@ def generate_longformat_file_line(longformat_file, longest_bytesizes)
     # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
     buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
     longest_bytesizes[key] ? value.rjust(longest_bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
-  end.join(' ')
+  end.join(' ').strip
 end
 
 def convert_permission(special_permission, permission, target_permission)
