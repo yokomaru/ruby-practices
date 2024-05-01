@@ -198,7 +198,7 @@ end
 
 def generate_longformat_file_line(longformat_file, longest_bytesizes)
   longformat_file.map do |key, value|
-    next if key == :blocks #blocksは表示には使用しないためスキップする
+    next if key == :blocks # blocksは表示には使用しないためスキップする
 
     # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
     buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
