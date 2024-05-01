@@ -12,6 +12,10 @@ MULTI_BYTESIZE = 2
 STICKEY_PERMISSION = '1'
 SUID_PERMISSION = '2'
 SGID_PERMISSION = '4'
+SPECIAL_PERMISSION_INDEX = 2
+OWNER_PERMISSION_INDEX = 3
+GROUP_PERMISSION_INDEX = 4
+OTHER_PERMISSION_INDEX = 5
 
 FILE_TYPE = {
   '01' => 'p',
@@ -175,16 +179,14 @@ def filemode(file_stat)
   file_stat_mode = file_stat.mode.to_s(8).rjust(6, '0')
   each_permissions = generate_each_permissions(file_stat_mode)
   each_permissions.map do |permissions|
-    convert_permission(file_stat_mode[2], permissions[0], permissions[1])
-  end.unshift(FILE_TYPE[file_stat_mode[0, 2]]).join
+    convert_permission(file_stat_mode[SPECIAL_PERMISSION_INDEX], permissions[0], permissions[1])
+  end.unshift(FILE_TYPE[file_stat_mode[0, SPECIAL_PERMISSION_INDEX]]).join
 end
 
 def generate_each_permissions(file_stat_mode)
-  [
-    [file_stat_mode[3], SUID_PERMISSION],
-    [file_stat_mode[4], SUID_PERMISSION],
-    [file_stat_mode[5], STICKEY_PERMISSION]
-  ]
+  [OWNER_PERMISSION_INDEX, GROUP_PERMISSION_INDEX, OTHER_PERMISSION_INDEX].map do |index|
+    [file_stat_mode[index], index == OTHER_PERMISSION_INDEX ? STICKEY_PERMISSION : SUID_PERMISSION]
+  end
 end
 
 def generate_longest_bytesizes(files)
