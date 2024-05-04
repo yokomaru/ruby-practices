@@ -27,7 +27,7 @@ FILE_TYPE = {
   '14' => 's'
 }.freeze
 
-PERMISSION = {
+PERMISSION_TYPE = {
   '0' => '---',
   '1' => '--x',
   '2' => '-w-',
@@ -38,7 +38,7 @@ PERMISSION = {
   '7' => 'rwx'
 }.freeze
 
-SPECIAL_PERMISSION = {
+SPECIAL_PERMISSION_TYPE = {
   '0' => '-',
   '1' => 't',
   '2' => 's',
@@ -148,69 +148,69 @@ def sort_files(files, option_r)
 end
 
 def display_longformat_files(files)
-  longformat_files = files.map { |file| generate_longformat_file(file, File.path(file)) }
-  longest_bytesizes = generate_longest_bytesizes(longformat_files)
-  longformat_files.each { |longformat_file| puts generate_longformat_file_line(longformat_file, longest_bytesizes) }
+  statuses = files.map { |file| file_status(file, File.path(file)) }
+  bytesizes = longest_bytesizes(statuses)
+  statuses.each { |status| puts longformat_file(status, bytesizes) }
 end
 
 def display_longformat_directory_files(files, path)
-  longformat_files = files.map { |file| generate_longformat_file(file, File.absolute_path(file, path)) }
-  longest_bytesizes = generate_longest_bytesizes(longformat_files)
-  puts "total #{longformat_files.sum { |file| file[:blocks] }}"
+  statuses = files.map { |file| file_status(file, File.absolute_path(file, path)) }
+  bytesizes = longest_bytesizes(statuses)
+  puts "total #{statuses.sum { |file| file[:blocks] }}"
 
-  longformat_files.each { |longformat_file| puts generate_longformat_file_line(longformat_file, longest_bytesizes) }
+  statuses.each { |status| puts longformat_file(status, bytesizes) }
 end
 
-def generate_longformat_file(file, file_path)
-  file_stat = File::Stat.new(file_path)
+def file_status(file, path)
+  status = File::Stat.new(path)
   {
-    filemode: filemode(file_stat),
-    hardlink_nums: file_stat.nlink.to_s,
-    owner_name: Etc.getpwuid(file_stat.uid).name,
-    group_name: Etc.getgrgid(file_stat.gid).name,
-    bytesize: file_stat.size.to_s,
-    latest_modify_datetime: file_stat.mtime.strftime('%_m %e %H:%M'),
+    filemode: filemode(status),
+    hardlink_nums: status.nlink.to_s,
+    owner_name: Etc.getpwuid(status.uid).name,
+    group_name: Etc.getgrgid(status.gid).name,
+    bytesize: status.size.to_s,
+    latest_modify_datetime: status.mtime.strftime('%_m %e %H:%M'),
     filename: file,
-    blocks: file_stat.blocks
+    blocks: status.blocks
   }
 end
 
-def filemode(file_stat)
-  file_stat_mode = file_stat.mode.to_s(8).rjust(6, '0')
-  each_permissions = generate_each_permissions(file_stat_mode)
+def filemode(status)
+  mode = status.mode.to_s(8).rjust(6, '0')
+  each_permissions = permissions_and_target_permissions(mode)
   each_permissions.map do |permissions|
-    convert_permission(file_stat_mode[SPECIAL_PERMISSION_INDEX], permissions[0], permissions[1])
-  end.unshift(FILE_TYPE[file_stat_mode[0, SPECIAL_PERMISSION_INDEX]]).join
+    convert_permission(mode[SPECIAL_PERMISSION_INDEX], permissions[:permission], permissions[:target_permission])
+  end.unshift(FILE_TYPE[mode[0, SPECIAL_PERMISSION_INDEX]]).join
 end
 
-def generate_each_permissions(file_stat_mode)
+def permissions_and_target_permissions(mode)
   [OWNER_PERMISSION_INDEX, GROUP_PERMISSION_INDEX, OTHER_PERMISSION_INDEX].map do |index|
-    [file_stat_mode[index], index == OTHER_PERMISSION_INDEX ? STICKEY_PERMISSION : SUID_PERMISSION]
+    { permission: mode[index], target_permission: index == OTHER_PERMISSION_INDEX ? STICKEY_PERMISSION : SUID_PERMISSION }
   end
 end
 
-def generate_longest_bytesizes(files)
+def longest_bytesizes(statuses)
   # hardlink_nums owner_name group_name bytesizeはファイル名の最大文字数で右詰めするため取得
   %i[hardlink_nums owner_name group_name bytesize].each_with_object({}) do |sym, hash|
-    hash[sym] = files.map { |file| file[sym].to_s.bytesize }.max
+    hash[sym] = statuses.map { |status| status[sym].to_s.bytesize }.max
   end
 end
 
-def generate_longformat_file_line(longformat_file, longest_bytesizes)
-  longformat_file.map do |key, value|
+def longformat_file(status, bytesizes)
+  status.map do |key, value|
     next if key == :blocks # blocksは表示には使用しないためスキップする
 
     # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
     buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
-    longest_bytesizes[key] ? value.rjust(longest_bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
+    bytesizes[key] ? value.rjust(bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
   end.join(' ').strip
 end
 
 def convert_permission(special_permission, permission, target_permission)
-  return PERMISSION[permission] if special_permission != target_permission
+  return PERMISSION_TYPE[permission] if special_permission != target_permission
 
-  special_permission_character = permission.to_i.odd? ? SPECIAL_PERMISSION[special_permission] : SPECIAL_PERMISSION[special_permission].upcase
-  PERMISSION[permission].chop + special_permission_character
+  character = permission.to_i.odd? ? SPECIAL_PERMISSION_TYPE[special_permission] : SPECIAL_PERMISSION_TYPE[special_permission].upcase
+  PERMISSION_TYPE[permission].chop + character
 end
 
 main
