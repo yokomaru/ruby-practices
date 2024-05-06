@@ -156,7 +156,7 @@ end
 def display_longformat_directory_files(files, path)
   statuses = files.map { |file| file_status(file, File.absolute_path(file, path)) }
   bytesizes = longest_bytesizes(statuses)
-  puts "total #{statuses.sum { |file| file[:blocks] }}"
+  puts "total #{statuses.sum { |status| status[:blocks] }}"
 
   statuses.each { |status| puts longformat_file(status, bytesizes) }
 end
