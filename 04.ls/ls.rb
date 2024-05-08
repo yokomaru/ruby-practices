@@ -95,7 +95,7 @@ def display_directories(directories, arg_counts, options)
     next if sorted_directory_files.empty?
 
     if options[:l]
-      display_longformat_directory_files(sorted_directory_files, directory.path)
+      display_longformat_files(sorted_directory_files, directory.path)
     else
       generated_files = generate_display_files(sorted_directory_files)
       transpose_display_files(generated_files)
@@ -147,32 +147,28 @@ def sort_files(files, option_r)
   option_r ? files.sort.reverse : files.sort
 end
 
-def display_longformat_files(files)
-  statuses = files.map { |file| file_status(file, File.path(file)) }
+def display_longformat_files(files, path = nil)
+  statuses = file_statuses(files, path)
   bytesizes = longest_bytesizes(statuses)
-  statuses.each { |status| puts longformat_file(status, bytesizes) }
+  puts "total #{statuses.sum { |status| status[:blocks] }}" if path
+  puts longformat_files(statuses, bytesizes)
 end
 
-def display_longformat_directory_files(files, path)
-  statuses = files.map { |file| file_status(file, File.absolute_path(file, path)) }
-  bytesizes = longest_bytesizes(statuses)
-  puts "total #{statuses.sum { |status| status[:blocks] }}"
-
-  statuses.each { |status| puts longformat_file(status, bytesizes) }
-end
-
-def file_status(file, path)
-  status = File::Stat.new(path)
-  {
-    filemode: filemode(status),
-    hardlink_nums: status.nlink.to_s,
-    owner_name: Etc.getpwuid(status.uid).name,
-    group_name: Etc.getgrgid(status.gid).name,
-    bytesize: status.size.to_s,
-    latest_modify_datetime: status.mtime.strftime('%_m %e %H:%M'),
-    filename: file,
-    blocks: status.blocks
-  }
+def file_statuses(files, path)
+  files.map do |file|
+    file_path = path ? File.absolute_path(file, path) : File.path(file)
+    status = File::Stat.new(file_path)
+    {
+      filemode: filemode(status),
+      hardlink_nums: status.nlink.to_s,
+      owner_name: Etc.getpwuid(status.uid).name,
+      group_name: Etc.getgrgid(status.gid).name,
+      bytesize: status.size.to_s,
+      latest_modify_datetime: status.mtime.strftime('%_m %e %H:%M'),
+      filename: file,
+      blocks: status.blocks
+    }
+  end
 end
 
 def filemode(status)
@@ -196,14 +192,14 @@ def longest_bytesizes(statuses)
   end
 end
 
-def longformat_file(status, bytesizes)
-  status.map do |key, value|
-    next if key == :blocks # blocksは表示には使用しないためスキップする
-
-    # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
-    buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
-    bytesizes[key] ? value.rjust(bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
-  end.join(' ').strip
+def longformat_files(statuses, bytesizes)
+  statuses.map do |status|
+    status.reject{|key| key == :blocks}.map do |key, value| # blocksは表示には使用しないため表示の配列から除く
+      # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
+      buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
+      bytesizes[key] ? value.rjust(bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
+    end.join(' ').strip
+  end
 end
 
 def convert_permission(special_permission, permission, target_permission)
