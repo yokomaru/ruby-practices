@@ -173,15 +173,19 @@ end
 
 def filemode(status)
   mode = status.mode.to_s(8).rjust(6, '0')
-  each_permissions = permissions_and_target_permissions(mode)
-  each_permissions.map do |permissions|
-    convert_permission(mode[SPECIAL_PERMISSION_INDEX], permissions[:permission], permissions[:target_permission])
+  octal_permissions = each_octal_permissions(mode)
+  octal_permissions.map do |permissions|
+    convert_permission(permissions)
   end.unshift(FILE_TYPE[mode[0, SPECIAL_PERMISSION_INDEX]]).join
 end
 
-def permissions_and_target_permissions(mode)
+def each_octal_permissions(mode)
   [OWNER_PERMISSION_INDEX, GROUP_PERMISSION_INDEX, OTHER_PERMISSION_INDEX].map do |index|
-    { permission: mode[index], target_permission: index == OTHER_PERMISSION_INDEX ? STICKEY_PERMISSION : SUID_PERMISSION }
+    {
+      special_permission: mode[SPECIAL_PERMISSION_INDEX],
+      permission: mode[index],
+      target_permission: index == OTHER_PERMISSION_INDEX ? STICKEY_PERMISSION : SUID_PERMISSION
+    }
   end
 end
 
@@ -194,7 +198,7 @@ end
 
 def longformat_files(statuses, bytesizes)
   statuses.map do |status|
-    status.reject{|key| key == :blocks}.map do |key, value| # blocksは表示には使用しないため表示の配列から除く
+    status.reject { |key| key == :blocks }.map do |key, value| # blocksは表示には使用しないため表示の配列から除く
       # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
       buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
       bytesizes[key] ? value.rjust(bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
@@ -202,11 +206,15 @@ def longformat_files(statuses, bytesizes)
   end
 end
 
-def convert_permission(special_permission, permission, target_permission)
-  return PERMISSION_TYPE[permission] if special_permission != target_permission
+def convert_permission(permissions)
+  return PERMISSION_TYPE[permissions[:permission]] if permissions[:special_permission] != permissions[:target_permission]
 
-  character = permission.to_i.odd? ? SPECIAL_PERMISSION_TYPE[special_permission] : SPECIAL_PERMISSION_TYPE[special_permission].upcase
-  PERMISSION_TYPE[permission].chop + character
+  character = if permissions[:permission].to_i.odd?
+                SPECIAL_PERMISSION_TYPE[permissions[:special_permission]]
+              else
+                SPECIAL_PERMISSION_TYPE[permissions[:special_permission]].upcase
+              end
+  PERMISSION_TYPE[permissions[:permission]].chop + character
 end
 
 main
