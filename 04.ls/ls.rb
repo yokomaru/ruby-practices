@@ -175,7 +175,7 @@ def filemode(status)
   mode = status.mode.to_s(8).rjust(6, '0')
   octal_permissions = each_octal_permissions(mode)
   octal_permissions.map do |permissions|
-    convert_permission(permissions)
+    convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end.unshift(FILE_TYPE[mode[0, SPECIAL_PERMISSION_INDEX]]).join
 end
 
@@ -206,17 +206,13 @@ def longformat_files(statuses, bytesizes)
   end
 end
 
-def convert_permission(permissions)
-  permission = permissions[:permission]
-  special_permission = permissions[:special_permission]
-  return PERMISSION_TYPE[permission] if special_permission != permissions[:target_permission]
+def convert_permission(special_permission, permission, target_permission)
+  permission_type = PERMISSION_TYPE[permission]
+  return permission_type if special_permission != target_permission
 
-  character = if permission.to_i.odd?
-                SPECIAL_PERMISSION_TYPE[special_permission]
-              else
-                SPECIAL_PERMISSION_TYPE[special_permission].upcase
-              end
-  PERMISSION_TYPE[permission].chop + character
+  special_permission_type = SPECIAL_PERMISSION_TYPE[special_permission]
+  special_permission_type = special_permission_type.upcase if permission.to_i.even?
+  [permission_type.chop, special_permission_type].join
 end
 
 main
