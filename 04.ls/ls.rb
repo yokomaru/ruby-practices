@@ -201,8 +201,8 @@ def longformat_files(statuses, bytesizes)
     status.reject { |key| key == :blocks }.map do |key, value| # blocksは表示には使用しないため表示の配列から除く
       # filemode owner_name group_name は右隣と２スペース分空いているため空白文字を追加
       buffer_space = ' ' if %i[filemode owner_name group_name].include?(key)
-      bytesizes[key] ? value.rjust(bytesizes[key]) + buffer_space.to_s : value + buffer_space.to_s
-    end.join(' ').strip
+      [value.rjust(bytesizes[key].to_i), buffer_space].join
+    end.join(' ')
   end
 end
 
