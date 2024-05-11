@@ -176,20 +176,9 @@ end
 
 def filemode(status)
   mode = status.mode.to_s(8).rjust(6, '0')
-  octal_permissions = each_octal_permissions(mode)
-  octal_permissions.map do |permissions|
-    convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
-  end.unshift(FILE_TYPE[mode[0, SPECIAL_PERMISSION_INDEX]]).join
-end
-
-def each_octal_permissions(mode)
   [OWNER_PERMISSION_INDEX, GROUP_PERMISSION_INDEX, OTHER_PERMISSION_INDEX].map do |index|
-    {
-      special_permission: mode[SPECIAL_PERMISSION_INDEX],
-      permission: mode[index],
-      target_permission: TARGET_SPECIAL_PERMISSION[index]
-    }
-  end
+    convert_permission(mode[index], mode[SPECIAL_PERMISSION_INDEX], TARGET_SPECIAL_PERMISSION[index])
+  end.unshift(FILE_TYPE[mode[0, SPECIAL_PERMISSION_INDEX]]).join
 end
 
 def longest_bytesizes(statuses)
@@ -209,9 +198,9 @@ def longformat_files(statuses, bytesizes)
   end
 end
 
-def convert_permission(special_permission, permission, target_permission)
+def convert_permission(permission, special_permission, target_special_permission)
   permission_type = PERMISSION_TYPE[permission]
-  return permission_type if special_permission != target_permission
+  return permission_type if special_permission != target_special_permission
 
   special_permission_type = SPECIAL_PERMISSION_TYPE[special_permission]
   special_permission_type = special_permission_type.upcase if permission.to_i.even?
