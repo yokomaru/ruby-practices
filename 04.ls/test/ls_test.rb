@@ -266,55 +266,55 @@ class LsTest < Minitest::Test
     # パーミッション0: --- 全ての権限なし
     # 特殊権限なし
     permissions = { special_permission: '0', permission: '0', target_permission: '1' }
-    assert_equal '---', convert_permission(permissions)
+    assert_equal '---', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 
   def test_ls_option_permission_1_and_not_special_permission
     # パーミッション1: --x 実行のみ
     # 特殊権限なし
     permissions = { special_permission: '0', permission: '1', target_permission: '1' }
-    assert_equal '--x', convert_permission(permissions)
+    assert_equal '--x', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 
   def test_ls_option_permission_2_and_sticky_bit_permission
     # パーミッション2: -w- 書き込みと実行
     # 特殊権限 スティッキービット T
     permissions = { special_permission: '1', permission: '2', target_permission: '1' }
-    assert_equal '-wT', convert_permission(permissions)
+    assert_equal '-wT', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 
   def test_ls_option_permission_3_and_sticky_bit_permission
     # パーミッション3: -wx 書き込みと実行
     # 特殊権限 スティッキービット t
     permissions = { special_permission: '1', permission: '3', target_permission: '1' }
-    assert_equal '-wt', convert_permission(permissions)
+    assert_equal '-wt', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 
   def test_ls_option_permission_4_and_sgid_permission
     # パーミッション4: r-- 読み込みのみ
     # 特殊権限 SGID S
     permissions = { special_permission: '2', permission: '4', target_permission: '2' }
-    assert_equal 'r-S', convert_permission(permissions)
+    assert_equal 'r-S', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 
   def test_ls_option_convert_permission_to_permission_5_and_sgid_permission
     # パーミッション5: r-x 読み込み＋実行
     # 特殊権限 SGID s
     permissions = { special_permission: '2', permission: '5', target_permission: '2' }
-    assert_equal 'r-s', convert_permission(permissions)
+    assert_equal 'r-s', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 
   def test_ls_option_convert_permission_to_permission_6_and_suid_permission
     # パーミッション6: rw- 読み込み＋書き込みのみ
     # 特殊権限 SUID S
     permissions = { special_permission: '4', permission: '6', target_permission: '4' }
-    assert_equal 'rwS', convert_permission(permissions)
+    assert_equal 'rwS', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 
   def test_ls_option_convert_permission_to_permission_7_and_suid_permission
     # パーミッション7: rwx 読み込み＋書き込み＋実行
     # 特殊権限 SUID s
     permissions = { special_permission: '4', permission: '7', target_permission: '4' }
-    assert_equal 'rws', convert_permission(permissions)
+    assert_equal 'rws', convert_permission(permissions[:special_permission], permissions[:permission], permissions[:target_permission])
   end
 end
