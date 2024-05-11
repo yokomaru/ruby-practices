@@ -69,15 +69,15 @@ def main
 
   sorted_arg_files = sort_files(arg_files, options[:r])
 
-  display_files(sorted_arg_files, options)
+  display_files(sorted_arg_files, options[:l])
   puts if !arg_directories.empty? && !sorted_arg_files.empty?
   display_directories(arg_directories, args.size, options)
 end
 
-def display_files(files, options)
+def display_files(files, option_l)
   return if files.empty?
 
-  if options[:l]
+  if option_l
     display_longformat_files(files)
   else
     generated_files = generate_display_files(files)
