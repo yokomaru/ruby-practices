@@ -9,9 +9,6 @@ MIN_COLUMN = 1
 BUFFER_WIDTH = 1
 NORMAL_BYTESIZE = 1
 MULTI_BYTESIZE = 2
-STICKEY_PERMISSION = '1'
-SUID_PERMISSION = '2'
-SGID_PERMISSION = '4'
 SPECIAL_PERMISSION_INDEX = 2
 OWNER_PERMISSION_INDEX = 3
 GROUP_PERMISSION_INDEX = 4
@@ -43,6 +40,12 @@ SPECIAL_PERMISSION_TYPE = {
   '1' => 't',
   '2' => 's',
   '4' => 's'
+}.freeze
+
+TARGET_SPECIAL_PERMISSION = {
+  OWNER_PERMISSION_INDEX => '2',
+  GROUP_PERMISSION_INDEX => '4',
+  OTHER_PERMISSION_INDEX => '1'
 }.freeze
 
 def main
@@ -184,7 +187,7 @@ def each_octal_permissions(mode)
     {
       special_permission: mode[SPECIAL_PERMISSION_INDEX],
       permission: mode[index],
-      target_permission: index == OTHER_PERMISSION_INDEX ? STICKEY_PERMISSION : SUID_PERMISSION
+      target_permission: TARGET_SPECIAL_PERMISSION[index]
     }
   end
 end
