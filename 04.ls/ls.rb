@@ -207,14 +207,16 @@ def longformat_files(statuses, bytesizes)
 end
 
 def convert_permission(permissions)
-  return PERMISSION_TYPE[permissions[:permission]] if permissions[:special_permission] != permissions[:target_permission]
+  permission = permissions[:permission]
+  special_permission = permissions[:special_permission]
+  return PERMISSION_TYPE[permission] if special_permission != permissions[:target_permission]
 
-  character = if permissions[:permission].to_i.odd?
-                SPECIAL_PERMISSION_TYPE[permissions[:special_permission]]
+  character = if permission.to_i.odd?
+                SPECIAL_PERMISSION_TYPE[special_permission]
               else
-                SPECIAL_PERMISSION_TYPE[permissions[:special_permission]].upcase
+                SPECIAL_PERMISSION_TYPE[special_permission].upcase
               end
-  PERMISSION_TYPE[permissions[:permission]].chop + character
+  PERMISSION_TYPE[permission].chop + character
 end
 
 main
