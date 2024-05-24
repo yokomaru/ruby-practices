@@ -222,4 +222,99 @@ class LsTest < Minitest::Test
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -a -r`
   end
+
+  def test_ls_option_l
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    # xxxxxxxxxxx は管理者名の名前のためマスク
+    # 実行時に変更する
+    expected = <<~LS_RESULT
+      total 0
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_1.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_2.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_3.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_4.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_5.txt
+      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_6.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -l`
+  end
+
+  def test_ls_option_l_specify_file
+    FileUtils.cd(@wd.to_s)
+    # xxxxxxxxxxx は管理者名の名前のためマスク
+    # 実行時に変更する
+    expected = <<~LS_RESULT
+      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test/test_directory_option_l/test_1.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -l test/test_directory_option_l/test_1.txt`
+  end
+
+  def test_ls_option_l_specify_directory
+    FileUtils.cd(@wd.to_s)
+    # xxxxxxxxxx は管理者名の名前のためマスク
+    # 実行時に変更する
+    expected = <<~LS_RESULT
+      total 16
+      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test_1.txt
+      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test_2.txt
+      drwxr-xr-x  3 xxxxxxxxxxx  staff   96  4 23 17:18 test_dir
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -l test/test_directory_option_l`
+  end
+
+  def test_ls_option_permission_0_and_not_special_permission
+    # パーミッション0: --- 全ての権限なし
+    # 特殊権限なし
+    permissions = { permission: '0', special_permission: '0', target_special_permission: '1' }
+    assert_equal '---', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_permission_1_and_not_special_permission
+    # パーミッション1: --x 実行のみ
+    # 特殊権限なし
+    permissions = { permission: '1', special_permission: '0', target_special_permission: '1' }
+    assert_equal '--x', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_permission_2_and_sticky_bit_permission
+    # パーミッション2: -w- 書き込みと実行
+    # 特殊権限 スティッキービット T
+    permissions = { permission: '2', special_permission: '1', target_special_permission: '1' }
+    assert_equal '-wT', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_permission_3_and_sticky_bit_permission
+    # パーミッション3: -wx 書き込みと実行
+    # 特殊権限 スティッキービット t
+    permissions = { permission: '3', special_permission: '1', target_special_permission: '1' }
+    assert_equal '-wt', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_permission_4_and_sgid_permission
+    # パーミッション4: r-- 読み込みのみ
+    # 特殊権限 SGID S
+    permissions = { permission: '4', special_permission: '2', target_special_permission: '2' }
+    assert_equal 'r-S', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_convert_permission_to_permission_5_and_sgid_permission
+    # パーミッション5: r-x 読み込み＋実行
+    # 特殊権限 SGID s
+    permissions = { permission: '5', special_permission: '2', target_special_permission: '2' }
+    assert_equal 'r-s', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_convert_permission_to_permission_6_and_suid_permission
+    # パーミッション6: rw- 読み込み＋書き込みのみ
+    # 特殊権限 SUID S
+    permissions = { permission: '6', special_permission: '4', target_special_permission: '4' }
+    assert_equal 'rwS', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_convert_permission_to_permission_7_and_suid_permission
+    # パーミッション7: rwx 読み込み＋書き込み＋実行
+    # 特殊権限 SUID s
+    permissions = { permission: '7', special_permission: '4', target_special_permission: '4' }
+    assert_equal 'rws', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
 end
