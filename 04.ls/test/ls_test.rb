@@ -225,26 +225,26 @@ class LsTest < Minitest::Test
 
   def test_ls_option_l
     FileUtils.cd("#{@wd}/test/test_directory_dotfile")
-    # xxxxxxxxxxx は管理者名の名前のためマスク
+    # xxxxxxxxxx は管理者名の名前のためマスク
     # 実行時に変更する
     expected = <<~LS_RESULT
       total 0
-      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_1.txt
-      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_2.txt
-      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_3.txt
-      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_4.txt
-      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_5.txt
-      -rw-r--r--  1 xxxxxxxxxxx  staff  0  4  8 14:27 test_6.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_1.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_2.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_3.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_4.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_5.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_6.txt
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -l`
   end
 
   def test_ls_option_l_specify_file
     FileUtils.cd(@wd.to_s)
-    # xxxxxxxxxxx は管理者名の名前のためマスク
+    # xxxxxxxxxx は管理者名の名前のためマスク
     # 実行時に変更する
     expected = <<~LS_RESULT
-      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test/test_directory_option_l/test_1.txt
+      -rwxr-xr-x  1 xxxxxxxxxx  staff  249  5 24 17:02 test/test_directory_option_l/test_1.txt
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -l test/test_directory_option_l/test_1.txt`
   end
@@ -255,9 +255,9 @@ class LsTest < Minitest::Test
     # 実行時に変更する
     expected = <<~LS_RESULT
       total 16
-      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test_1.txt
-      -rwxr-xr-x  1 xxxxxxxxxxx  staff  249  4 23 17:10 test_2.txt
-      drwxr-xr-x  3 xxxxxxxxxxx  staff   96  4 23 17:18 test_dir
+      -rwxr-xr-x  1 xxxxxxxxxx  staff  249  5 24 17:02 test_1.txt
+      -rwxr-xr-x  1 xxxxxxxxxx  staff  249  5 24 17:02 test_2.txt
+      drwxr-xr-x  3 xxxxxxxxxx  staff   96  5 24 17:02 test_dir
     LS_RESULT
     assert_equal expected, `ruby #{@wd}/ls.rb -l test/test_directory_option_l`
   end
@@ -316,5 +316,87 @@ class LsTest < Minitest::Test
     # 特殊権限 SUID s
     permissions = { permission: '7', special_permission: '4', target_special_permission: '4' }
     assert_equal 'rws', convert_permission(permissions[:permission], permissions[:special_permission], permissions[:target_special_permission])
+  end
+
+  def test_ls_option_a_with_option_l
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    expected = <<~LS_RESULT
+      total 0
+      drwxr-xr-x   9 xxxxxxxxxx  staff  288  4  8 14:27 .
+      drwxr-xr-x  15 xxxxxxxxxx  staff  480  5 24 17:02 ..
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 .testfile
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_1.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_2.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_3.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_4.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_5.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_6.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -al`
+  end
+
+  def test_ls_option_l_with_option_r
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    expected = <<~LS_RESULT
+      total 0
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_6.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_5.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_4.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_3.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_2.txt
+      -rw-r--r--  1 xxxxxxxxxx  staff  0  4  8 14:27 test_1.txt
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -lr`
+  end
+
+  def test_ls_option_alr
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    expected = <<~LS_RESULT
+      total 0
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_6.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_5.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_4.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_3.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_2.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_1.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 .testfile
+      drwxr-xr-x  15 xxxxxxxxxx  staff  480  5 24 17:02 ..
+      drwxr-xr-x   9 xxxxxxxxxx  staff  288  4  8 14:27 .
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -alr`
+  end
+
+  def test_ls_option_lra
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    expected = <<~LS_RESULT
+      total 0
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_6.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_5.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_4.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_3.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_2.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_1.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 .testfile
+      drwxr-xr-x  15 xxxxxxxxxx  staff  480  5 24 17:02 ..
+      drwxr-xr-x   9 xxxxxxxxxx  staff  288  4  8 14:27 .
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -lra`
+  end
+
+  def test_ls_option_ral
+    FileUtils.cd("#{@wd}/test/test_directory_dotfile")
+    expected = <<~LS_RESULT
+      total 0
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_6.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_5.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_4.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_3.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_2.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 test_1.txt
+      -rw-r--r--   1 xxxxxxxxxx  staff    0  4  8 14:27 .testfile
+      drwxr-xr-x  15 xxxxxxxxxx  staff  480  5 24 17:02 ..
+      drwxr-xr-x   9 xxxxxxxxxx  staff  288  4  8 14:27 .
+    LS_RESULT
+    assert_equal expected, `ruby #{@wd}/ls.rb -ral`
   end
 end
