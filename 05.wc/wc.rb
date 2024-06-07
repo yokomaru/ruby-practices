@@ -24,7 +24,7 @@ def main
     counts << [0, 0, 0]
     next
   end
-  count_total(counts, args)
+  puts_total_count(counts) if args.size > 1
 end
 
 def parse_options(args)
@@ -51,11 +51,10 @@ def puts_count_string(count, args, string)
   puts "#{adjust_format_display_count(count)} #{file_name}"
 end
 
-def count_total(counts, args)
-  totals = counts.transpose.map(&:sum)
-  puts "#{adjust_format_display_count(totals)} total" if args.size > 1
+def puts_total_count(counts)
+  total_count = counts.compact.transpose.map(&:sum)
+  puts "#{adjust_format_display_count(total_count)} total"
 end
-
 
 def adjust_format_display_count(count)
   count.map { |c| c.to_s.rjust(DISPLAY_BUFFER_WIDTH) }.join
