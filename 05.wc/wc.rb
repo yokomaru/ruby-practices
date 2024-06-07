@@ -7,24 +7,13 @@ DISPLAY_BUFFER_WIDTH = 8
 
 # mainの作成
 def main
-  args = ARGV
-  options = parse_options(args)
-  strings = generate_strings_for_count(args)
-  counts = []
-  strings.map do |string|
-    row = args.empty? ? string : File.read(string)
-    count = []
-    count << row.count("\n") if options[:l]
-    count << row.split.size if options[:w]
-    count << row.bytesize if options[:c]
-    counts << count
-    puts_count_string(count, args, string)
-  rescue SystemCallError
-    puts_error_message(string)
-    counts << [0, 0, 0]
-    next
+  arguments = ARGV
+  options = parse_options(arguments)
+  if arguments.empty?
+    wc_standard_input(options)
+  else
+    wc_input_files(arguments, options)
   end
-  puts_total_count(counts) if args.size > 1
 end
 
 def parse_options(args)
@@ -33,22 +22,46 @@ def parse_options(args)
   options
 end
 
-def generate_strings_for_count(args)
-  # 引数がある場合は標準入力より引数の入力を優先させる
-  args.empty? ? [$stdin.readlines.join] : args
+def wc_standard_input(options)
+  input_source = $stdin.readlines.join
+  count = count_input_text(input_source, options)
+  puts_count(count)
 end
 
-def puts_error_message(string)
-  if File.directory?(string)
-    puts "wc: #{string}: read: Is a directory"
+def wc_input_files(arguments, options)
+  counts = arguments.map do |argument|
+    file_content = generate_file_content(argument)
+    if file_content[:type] == 'file'
+      count = count_input_text(file_content[:text], options)
+      puts_count(count, file_content[:name])
+      count
+    else
+      puts file_content[:error_message]
+    end
+  end
+  puts_total_count(counts) if arguments.size > 1
+end
+
+def count_input_text(input, options)
+  count = []
+  count << input.count("\n") if options[:l]
+  count << input.split.size if options[:w]
+  count << input.bytesize if options[:c]
+  count
+end
+
+def generate_file_content(argument)
+  if File.exist?(argument)
+    { type: 'file', text: File.read(argument), name: argument }
+  elsif File.directory?(argument)
+    { type: 'direcroty', error_message: "wc: #{argument}: read: Is a directory" }
   else
-    puts "wc: #{string}: open: No such file or directory"
+    { type: 'none', error_message: "wc: #{argument}: open: No such file or directory" }
   end
 end
 
-def puts_count_string(count, args, string)
-  file_name = string if !args.empty?
-  puts "#{adjust_format_display_count(count)} #{file_name}"
+def puts_count(count, filename)
+  puts "#{adjust_format_display_count(count)} #{filename}"
 end
 
 def puts_total_count(counts)
