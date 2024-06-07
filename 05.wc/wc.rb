@@ -51,7 +51,7 @@ def count_input_text(input, options)
 end
 
 def generate_file_content(argument)
-  if File.exist?(argument)
+  if File.file?(argument)
     { type: 'file', text: File.read(argument), name: argument }
   elsif File.directory?(argument)
     { type: 'direcroty', error_message: "wc: #{argument}: read: Is a directory" }
