@@ -48,16 +48,17 @@ end
 
 def puts_count_string(count, args, string)
   file_name = string if !args.empty?
-  puts "#{display_rjust(count)} #{file_name}"
+  puts "#{adjust_format_display_count(count)} #{file_name}"
 end
 
 def count_total(counts, args)
   totals = counts.transpose.map(&:sum)
-  puts "#{display_rjust(totals)} total" if args.size > 1
+  puts "#{adjust_format_display_count(totals)} total" if args.size > 1
 end
 
-def display_rjust(array)
-  array.map { |a| a.to_s.rjust(DISPLAY_BUFFER_WIDTH) }.join
+
+def adjust_format_display_count(count)
+  count.map { |c| c.to_s.rjust(DISPLAY_BUFFER_WIDTH) }.join
 end
 
 main if $PROGRAM_NAME == __FILE__
