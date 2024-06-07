@@ -25,7 +25,7 @@ end
 def wc_standard_input(options)
   input_source = $stdin.readlines.join
   count = count_input_text(input_source, options)
-  puts_count(count)
+  puts adjust_format_display_count(count)
 end
 
 def wc_input_files(arguments, options)
@@ -33,7 +33,7 @@ def wc_input_files(arguments, options)
     file_content = generate_file_content(argument)
     if file_content[:type] == 'file'
       count = count_input_text(file_content[:text], options)
-      puts_count_and_filename(count, file_content[:name])
+      puts "#{adjust_format_display_count(count)} #{file_content[:name]}"
       count
     else
       puts file_content[:error_message]
@@ -58,14 +58,6 @@ def generate_file_content(argument)
   else
     { type: 'none', error_message: "wc: #{argument}: open: No such file or directory" }
   end
-end
-
-def puts_count(count)
-  puts adjust_format_display_count(count)
-end
-
-def puts_count_and_filename(count, filename)
-  puts "#{adjust_format_display_count(count)} #{filename}"
 end
 
 def puts_total_count(counts)
