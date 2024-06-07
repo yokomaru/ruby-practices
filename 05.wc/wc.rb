@@ -33,7 +33,7 @@ def wc_input_files(arguments, options)
     file_content = generate_file_content(argument)
     if file_content[:type] == 'file'
       count = count_input_text(file_content[:text], options)
-      puts_count(count, file_content[:name])
+      puts_count_and_filename(count, file_content[:name])
       count
     else
       puts file_content[:error_message]
@@ -60,7 +60,11 @@ def generate_file_content(argument)
   end
 end
 
-def puts_count(count, filename)
+def puts_count(count)
+  puts adjust_format_display_count(count)
+end
+
+def puts_count_and_filename(count, filename)
   puts "#{adjust_format_display_count(count)} #{filename}"
 end
 
