@@ -16,8 +16,8 @@ def main
   end
 end
 
-def parse_options(args)
-  options = args.getopts('wcl', symbolize_names: true)
+def parse_options(arguments)
+  options = arguments.getopts('wcl', symbolize_names: true)
   options = { w: true, c: true, l: true } if options.values.none?
   options
 end
