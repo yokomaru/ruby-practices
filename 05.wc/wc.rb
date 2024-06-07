@@ -37,6 +37,7 @@ def wc_input_files(arguments, options)
       count
     else
       puts file_content[:error_message]
+      count_input_text("", options)
     end
   end
   puts_total_count(counts) if arguments.size > 1
