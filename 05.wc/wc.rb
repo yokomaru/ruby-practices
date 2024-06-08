@@ -23,26 +23,26 @@ end
 
 def wc_standard_input(options)
   input_source = $stdin.readlines.join
-  count = count_input_text(input_source, options)
-  puts adjust_format_display_count(count)
+  count = build_count(input_source, options)
+  puts format_count(count)
 end
 
 def wc_input_files(arguments, options)
   counts = arguments.map do |argument|
-    file_content = generate_file_content(argument)
+    file_content = build_file_content(argument)
     if file_content[:type] == 'file'
-      count = count_input_text(file_content[:text], options)
-      puts "#{adjust_format_display_count(count)} #{file_content[:name]}"
+      count = build_count(file_content[:text], options)
+      puts "#{format_count(count)} #{file_content[:name]}"
       count
     else
       puts file_content[:error_message]
-      count_input_text('', options)
+      build_count('', options) # 必要なオプション分の0の配列を返す
     end
   end
   puts_total_count(counts) if arguments.size > 1
 end
 
-def count_input_text(input, options)
+def build_count(input, options)
   count = []
   count << input.count("\n") if options[:l]
   count << input.split.size if options[:w]
@@ -50,7 +50,7 @@ def count_input_text(input, options)
   count
 end
 
-def generate_file_content(argument)
+def build_file_content(argument)
   if File.file?(argument)
     { type: 'file', text: File.read(argument), name: argument }
   elsif File.directory?(argument)
@@ -61,11 +61,11 @@ def generate_file_content(argument)
 end
 
 def puts_total_count(counts)
-  total_count = counts.compact.transpose.map(&:sum)
-  puts "#{adjust_format_display_count(total_count)} total"
+  total_count = counts.transpose.map(&:sum)
+  puts "#{format_count(total_count)} total"
 end
 
-def adjust_format_display_count(count)
+def format_count(count)
   count.map { |c| c.to_s.rjust(DISPLAY_BUFFER_WIDTH) }.join
 end
 
