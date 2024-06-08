@@ -5,7 +5,6 @@ require 'optparse'
 
 DISPLAY_BUFFER_WIDTH = 8
 
-# mainの作成
 def main
   arguments = ARGV
   options = parse_options(arguments)
