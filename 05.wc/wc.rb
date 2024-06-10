@@ -28,7 +28,6 @@ def wc(inputs, options, argument_empty)
   outputs
 end
 
-
 def build_input_count(input, argument_empty, options)
   if argument_empty
     { filename: '', count: build_count(input, options) }
