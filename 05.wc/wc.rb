@@ -8,11 +8,9 @@ DISPLAY_BUFFER_WIDTH = 8
 def main
   arguments = ARGV
   options = parse_options(arguments)
-  if arguments.empty?
-    wc_standard_input(options)
-  else
-    wc_input_files(arguments, options)
-  end
+  argument_empty = arguments.empty?
+  inputs = argument_empty ? [$stdin.readlines.join] : arguments
+  puts wc(inputs, options, argument_empty)
 end
 
 def parse_options(arguments)
@@ -21,25 +19,27 @@ def parse_options(arguments)
   options
 end
 
-def wc_standard_input(options)
-  input_source = $stdin.readlines.join
-  count = build_count(input_source, options)
-  puts format_count(count)
+def wc(inputs, options, argument_empty)
+  input_counts = inputs.map { |input| build_input_count(input, argument_empty, options) }
+  outputs = input_counts.map do |input_count|
+    build_output(input_count[:error_message], input_count[:count], input_count[:filename])
+  end
+  total_counts = input_counts.map { |input_count| input_count[:count] }.transpose.map(&:sum)
+  outputs << format_count(total_counts, 'total') if input_counts.size > 1
+  outputs
 end
 
-def wc_input_files(arguments, options)
-  counts = arguments.map do |argument|
-    file_content = build_file_content(argument)
-    if file_content[:type] == 'file'
-      count = build_count(file_content[:text], options)
-      puts "#{format_count(count)} #{file_content[:name]}"
-      count
-    else
-      puts file_content[:error_message]
-      build_count('', options) # 必要なオプション分の0の配列を返す
-    end
+
+def build_input_count(input, argument_empty, options)
+  if argument_empty
+    { filename: '', count: build_count(input, options) }
+  elsif File.file?(input)
+    { filename: input, count: build_count(File.read(input), options) }
+  elsif File.directory?(input)
+    { error_message: "wc: #{input}: read: Is a directory", count: build_count('', options) } # オプションに応じた0の配列を受け取る
+  else
+    { error_message: "wc: #{input}: open: No such file or directory", count: build_count('', options) } # オプションに応じた0の配列を受け取る
   end
-  puts_total_count(counts) if arguments.size > 1
 end
 
 def build_count(input, options)
@@ -50,23 +50,12 @@ def build_count(input, options)
   count
 end
 
-def build_file_content(argument)
-  if File.file?(argument)
-    { type: 'file', text: File.read(argument), name: argument }
-  elsif File.directory?(argument)
-    { type: 'direcroty', error_message: "wc: #{argument}: read: Is a directory" }
-  else
-    { type: 'none', error_message: "wc: #{argument}: open: No such file or directory" }
-  end
+def build_output(error_message, count, name)
+  error_message.nil? ? format_count(count, name) : error_message
 end
 
-def puts_total_count(counts)
-  total_count = counts.transpose.map(&:sum)
-  puts "#{format_count(total_count)} total"
-end
-
-def format_count(count)
-  count.map { |c| c.to_s.rjust(DISPLAY_BUFFER_WIDTH) }.join
+def format_count(count, name)
+  "#{count.map { |c| c.to_s.rjust(DISPLAY_BUFFER_WIDTH) }.join} #{name}"
 end
 
 main if $PROGRAM_NAME == __FILE__
