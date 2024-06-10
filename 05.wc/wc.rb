@@ -15,8 +15,7 @@ end
 
 def parse_options(arguments)
   options = arguments.getopts('wcl', symbolize_names: true)
-  options = { w: true, c: true, l: true } if options.values.none?
-  options
+  options.values.none? ? { w: true, c: true, l: true } : options
 end
 
 def wc(inputs, options, argument_empty)
