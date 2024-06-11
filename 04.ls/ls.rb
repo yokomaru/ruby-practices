@@ -49,18 +49,12 @@ TARGET_SPECIAL_PERMISSION = {
 }.freeze
 
 def main
-  option_params = OptionParser.new
-
-  options = {}
-  option_params.on('-a') { |param| options[:a] = param }
-  option_params.on('-r') { |param| options[:r] = param }
-  option_params.on('-l') { |param| options[:l] = param }
-
-  option_params.parse!(ARGV)
-
+  options = ARGV.getopts('arl')
   args = ARGV
+
   arg_directories = []
   arg_files = []
+
   arg_directories << Dir.open('.') if args.empty?
 
   args.each do |arg|
@@ -70,9 +64,9 @@ def main
     puts "ls: #{arg}: No such file or directory"
   end
 
-  sorted_arg_files = sort_files(arg_files, options[:r])
+  sorted_arg_files = sort_files(arg_files, options['r'])
 
-  display_files(sorted_arg_files, options[:l])
+  display_files(sorted_arg_files, options['l'])
   puts if !arg_directories.empty? && !sorted_arg_files.empty?
   display_directories(arg_directories, args.size, options)
 end
@@ -93,11 +87,11 @@ def display_directories(directories, arg_counts, options)
 
   directories.each.with_index(1) do |directory, i|
     puts "#{directory.path}:" if arg_counts > 1
-    directory_files = generate_directory_files(directory, options[:a])
-    sorted_directory_files = sort_files(directory_files, options[:r])
+    directory_files = generate_directory_files(directory, options['a'])
+    sorted_directory_files = sort_files(directory_files, options['r'])
     next if sorted_directory_files.empty?
 
-    if options[:l]
+    if options['l']
       display_longformat_files(sorted_directory_files, directory.path)
     else
       generated_files = generate_display_files(sorted_directory_files)
