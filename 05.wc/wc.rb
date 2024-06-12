@@ -8,9 +8,9 @@ DISPLAY_BUFFER_WIDTH = 8
 def main
   arguments = ARGV
   options = parse_options(arguments)
-  argument_empty = arguments.empty?
-  inputs = argument_empty ? [$stdin.readlines.join] : arguments
-  puts wc(inputs, options, argument_empty)
+  has_no_arguments = arguments.empty?
+  inputs = has_no_arguments ? [$stdin.readlines.join] : arguments
+  puts wc(inputs, options, has_no_arguments)
 end
 
 def parse_options(arguments)
@@ -18,8 +18,8 @@ def parse_options(arguments)
   options.values.none? ? { w: true, c: true, l: true } : options
 end
 
-def wc(inputs, options, argument_empty)
-  input_counts = inputs.map { |input| build_input_count(input, argument_empty, options) }
+def wc(inputs, options, has_no_arguments)
+  input_counts = inputs.map { |input| build_input_count(input, has_no_arguments, options) }
   outputs = input_counts.map do |input_count|
     build_output(input_count[:error_message], input_count[:count], input_count[:filename])
   end
@@ -28,8 +28,8 @@ def wc(inputs, options, argument_empty)
   outputs
 end
 
-def build_input_count(input, argument_empty, options)
-  if argument_empty
+def build_input_count(input, has_no_arguments, options)
+  if has_no_arguments
     { filename: '', count: build_count(input, options) }
   elsif File.file?(input)
     { filename: input, count: build_count(File.read(input), options) }
