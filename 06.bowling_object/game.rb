@@ -10,7 +10,6 @@ class Game
   end
 
   def score
-    # メソッド分ける
     scores = parse_score_text(@score_text)
     total_point = 0
     GAME_TIMES.times do
