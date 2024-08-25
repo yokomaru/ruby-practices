@@ -1,5 +1,7 @@
-require 'minitest/autorun'
-require_relative 'shot'
+# frozen_string_literal: true
+
+require_relative 'test_helper'
+require_relative '../shot'
 
 class ShotTest < Minitest::Test
   def test_shot

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'minitest/autorun'
-require 'minitest/pride'
+require_relative 'test_helper'
+require_relative '../game'
 
 class GameTest < Minitest::Test
   def test_score1
