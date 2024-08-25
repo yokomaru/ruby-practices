@@ -4,14 +4,23 @@ require_relative 'test_helper'
 require_relative '../frame'
 
 class FrameTest < Minitest::Test
-  def test_frame
-    frame_first = Frame.new('X')
-    assert_equal 10, frame_first.score
+  def test_normal_score_frame
+    frame_second = Frame.new('0', '7', 'X')
+    assert_equal 7, frame_second.score
+  end
 
-    frame_second = Frame.new('1', '9')
-    assert_equal 10, frame_second.score
+  def test_spare_frame
+    frame_second = Frame.new('1', '9', 'X')
+    assert_equal 20, frame_second.score
+  end
 
-    frame_third = Frame.new('1', '9', 'X')
-    assert_equal 20, frame_third.score
+  def test_strike_frame
+    frame_first = Frame.new('X', '0', '5')
+    assert_equal 15, frame_first.score
+  end
+
+  def test_last_full_strike_frame
+    frame_first = Frame.new('X', 'X', 'X')
+    assert_equal 30, frame_first.score
   end
 end
