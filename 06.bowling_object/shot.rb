@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 class Shot
-  attr_reader :mark
+  STRIKE_SCORE = 10
+  SPARE_SCORE = 10
 
   def initialize(mark)
     @mark = mark
   end
 
   def score
-    return 10 if mark == 'X'
-
-    mark.to_i
+    @mark == 'X' ? STRIKE_SCORE : @mark.to_i
   end
 end
