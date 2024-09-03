@@ -3,7 +3,7 @@
 require_relative 'frame'
 
 class Game
-  GAME_TIMES = 10
+  FRAME_TIMES = 10
 
   def initialize(score_text)
     @score_text = score_text
