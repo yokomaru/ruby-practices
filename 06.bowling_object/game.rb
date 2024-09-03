@@ -11,13 +11,11 @@ class Game
 
   def score
     scores = parse_score_text(@score_text)
-    total_point = 0
-    GAME_TIMES.times do
-      frame = Frame.new(scores[0], scores[1], scores[2])
-      total_point += frame.score
+    FRAME_TIMES.times.sum do
+      frame = Frame.new(*scores[0, 2], scores[2])
       scores.shift(scores[0] == Shot::STRIKE_SCORE ? 1 : 2)
+      frame.score
     end
-    total_point
   end
 
   private
