@@ -11,9 +11,9 @@ class Frame
 
   def score
     if @first_shot.score == Shot::STRIKE_SCORE || @first_shot.score + @second_shot.score == Shot::SPARE_SCORE
-      [@first_shot.score, @second_shot.score, @third_shot.score].sum
+      [@first_shot, @second_shot, @third_shot].map(&:score).sum
     else
-      [@first_shot.score, @second_shot.score].sum
+      [@first_shot, @second_shot].map(&:score).sum
     end
   end
 end
