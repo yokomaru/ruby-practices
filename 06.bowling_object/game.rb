@@ -6,22 +6,22 @@ class Game
   FRAME_TIMES = 10
 
   def initialize(score_text)
-    @score_text = score_text
+    @frames = parse_score_text(score_text)
   end
 
   def score
-    scores = parse_score_text(@score_text)
-    FRAME_TIMES.times.sum do
-      frame = Frame.new(*scores[0, 2], scores[2])
-      scores.shift(scores[0] == Shot::STRIKE_SCORE ? 1 : 2)
-      frame.score
-    end
+    @frames.sum(&:score)
   end
 
   private
 
   def parse_score_text(score_text)
-    score_text.split(',').map { |score| score == 'X' ? Shot::STRIKE_SCORE : score.to_i }
+    scores = score_text.split(',').map { |score| score == 'X' ? 10 : score.to_i }
+    Array.new(FRAME_TIMES) do
+      frame = Frame.new(*scores[0, 2], scores[2])
+      scores.shift(frame.strike? ? 1 : 2)
+      frame
+    end
   end
 end
 
