@@ -5,11 +5,8 @@ require_relative 'shot'
 class Frame
   FULL_SCORE = 10
 
-  def initialize(first_mark, second_mark, third_mark)
-    @first_shot = Shot.new(first_mark)
-    @second_shot = Shot.new(second_mark)
-    @third_shot = Shot.new(third_mark)
-    @shots = [@first_shot, @second_shot, @third_shot]
+  def initialize(*marks)
+    @shots = marks.map { |mark| Shot.new(mark) }
   end
 
   def score
@@ -21,7 +18,7 @@ class Frame
   end
 
   def strike?
-    @first_shot.score == FULL_SCORE
+    @shots.first.score == FULL_SCORE
   end
 
   def spare?
