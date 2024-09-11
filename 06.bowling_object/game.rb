@@ -16,7 +16,7 @@ class Game
   private
 
   def parse_score_text(score_text)
-    scores = score_text.split(',').map { |score| score == 'X' ? 10 : score.to_i }
+    scores = score_text.split(',')
     Array.new(FRAME_TIMES) do
       frame = Frame.new(*scores[0, 2], scores[2])
       scores.shift(frame.strike? ? 1 : 2)
