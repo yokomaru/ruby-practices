@@ -24,8 +24,3 @@ class Game
     end
   end
 end
-
-if __FILE__ == $PROGRAM_NAME
-  game = Game.new(ARGV[0])
-  puts game.score
-end
