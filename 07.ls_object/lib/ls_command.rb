@@ -2,29 +2,29 @@
 
 require 'debug'
 require 'pathname'
-require_relative 'ls_file'
+require_relative 'file_data'
 
 class LsCommand
   def initialize(path, dot_match: false, reverse: false)
     @path = path
     @dot_match = dot_match
     @reverse = reverse
-    @ls_files = Dir.open(@path).entries.map { |file| LsFile.new(file) }
+    @file_data = Dir.open(@path).entries.map { |file| FileData.new(file) }
     @matched_files = dot_match_files
-    @sorted_ls_files = sort_files
+    @sorted_file_data = sort_files
   end
 
   def display
-    @sorted_ls_files.map(&:name).join(' ')
+    @sorted_file_data.map(&:name).join(' ')
   end
 
   private
 
   def dot_match_files
     if @dot_match
-      @ls_files
+      @file_data
     else
-      @ls_files.filter { |file| !/^\./.match?(file.name) }
+      @file_data.filter { |file| !/^\./.match?(file.name) }
     end
   end
 
