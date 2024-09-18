@@ -10,22 +10,27 @@ class LsCommand
     @dot_match = dot_match
     @reverse = reverse
     @long_format = long_format
-    @file_data = Dir.open(@path).entries.map { |file| FileData.new(file, @path) }
+    @file_data = Dir.open(@path).entries.map { |name| FileData.new(name, @path) }
     @matched_files = dot_match_files
-    @sorted_file_data = sort_files
+    @sorted_files = sort_files
+    @formated_files = format_files
   end
 
   def display
-    if @long_format
-      ["total #{@sorted_file_data.sum { |status| status.file_status[:blocks] }}"]
-      .concat(@sorted_file_data.map(&:display_file_status))
-      .join("\n")
-    else
-      @sorted_file_data.map(&:name).join(' ')
-    end
+    @formated_files
   end
 
   private
+
+  def format_files
+    if @long_format
+      ["total #{@sorted_files.sum { |status| status.file_status[:blocks] }}"]
+      .concat(@sorted_files.map(&:display_file_status))
+      .join("\n")
+    else
+      @sorted_files.map(&:name).join(' ')
+    end
+  end
 
   def dot_match_files
     if @dot_match
