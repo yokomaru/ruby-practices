@@ -45,7 +45,7 @@ class LsCommandTest < Minitest::Test
   end
 
   def test_display_long_format_and_all_file
-    params = { long_format: true , dot_match: true }
+    params = { long_format: true, dot_match: true }
     ls_command = LsCommand.new('test_dir2', **params)
     expected = "total 16
 drwxr-xr-x 4 suzukiyouko staff 128  9 15 15:30 .
@@ -55,9 +55,8 @@ drwxr-xr-x 10 suzukiyouko staff 320  9 16 15:14 ..
     assert_equal expected, ls_command.display
   end
 
-
   def test_display_long_format_and_all_and_reverse_file
-    params = { reverse: true, long_format: true , dot_match: true }
+    params = { reverse: true, long_format: true, dot_match: true }
     ls_command = LsCommand.new('test_dir2', **params)
     expected = "total 16
 -rw-r--r-- 1 suzukiyouko staff 10  9 15 15:30 test_2.txt

@@ -53,6 +53,6 @@ class FileStatus
   end
 
   def format_file_mode
-    @pathname.stat.mode.to_s(8)[-3..-1].gsub(/./, MODE_TABLE)
+    @pathname.stat.mode.to_s(8)[-3..].gsub(/./, MODE_TABLE)
   end
 end

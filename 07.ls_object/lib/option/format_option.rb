@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 require_relative 'option'
 class FormatOption < Option
-
   def initialize(file, option, total_block)
     super(file, option)
     @total_block = total_block

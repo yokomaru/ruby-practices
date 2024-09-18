@@ -17,7 +17,7 @@ class LsCommand
   end
 
   def display
-    FormatOption.new(@files, @long_format, @total_block ).execute
+    FormatOption.new(@files, @long_format, @total_block).execute
   end
 
   private
@@ -25,7 +25,7 @@ class LsCommand
   def build_files
     files = Dir.open(@path).entries.map { |name| FileData.new(name, @path) }
     matched_files = MatchOption.new(files, @dot_match).execute
-    sorted_files = SortOption.new(matched_files, @reverse).execute
+    SortOption.new(matched_files, @reverse).execute
   end
 
   def sum_blocks
