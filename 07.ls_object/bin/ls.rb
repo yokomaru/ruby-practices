@@ -10,8 +10,10 @@ if __FILE__ == $PROGRAM_NAME
   params = { dot_match: false }
   opt.on('-a') { |v| params[:dot_match] = v }
   opt.on('-r') { |v| params[:reverse] = v }
+  opt.on('-l') { |v| params[:long_format] = v }
   opt.parse!(ARGV)
 
   ls = LsCommand.new('.', **params)
+
   puts ls.display
 end

@@ -5,17 +5,24 @@ require 'pathname'
 require_relative 'file_data'
 
 class LsCommand
-  def initialize(path, dot_match: false, reverse: false)
+  def initialize(path, dot_match: false, reverse: false, long_format: false)
     @path = path
     @dot_match = dot_match
     @reverse = reverse
-    @file_data = Dir.open(@path).entries.map { |file| FileData.new(file) }
+    @long_format = long_format
+    @file_data = Dir.open(@path).entries.map { |file| FileData.new(file, @path) }
     @matched_files = dot_match_files
     @sorted_file_data = sort_files
   end
 
   def display
-    @sorted_file_data.map(&:name).join(' ')
+    if @long_format
+      ["total #{@sorted_file_data.sum { |status| status.file_status[:blocks] }}"]
+      .concat(@sorted_file_data.map(&:display_file_status))
+      .join("\n")
+    else
+      @sorted_file_data.map(&:name).join(' ')
+    end
   end
 
   private
