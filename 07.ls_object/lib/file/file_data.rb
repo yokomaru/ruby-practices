@@ -13,10 +13,4 @@ class FileData
     @path = path
     @file_status = FileStatus.new(@name, @path).build_file_status
   end
-
-  def display_file_status
-    @file_status.reject { |key| key == :blocks }.map do |_key, value| # blocksは表示には使用しないため表示の配列から除く
-      value
-    end.join(' ')
-  end
 end

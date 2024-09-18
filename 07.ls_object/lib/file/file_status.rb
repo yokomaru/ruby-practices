@@ -25,10 +25,10 @@ class FileStatus
     @status = File::Stat.new(@pathname)
     @file_type = format_file_type
     @file_mode = format_file_mode
-    @hardlink_nums = @status.nlink
+    @hardlink_nums = @status.nlink.to_s
     @owner_name = Etc.getpwuid(@status.uid).name
     @group_name = Etc.getgrgid(@status.gid).name
-    @bytesize = @status.size
+    @bytesize = @status.size.to_s
     @latest_modify_datetime = @status.mtime.strftime('%_m %e %H:%M')
     @blocks = @status.blocks
   end
