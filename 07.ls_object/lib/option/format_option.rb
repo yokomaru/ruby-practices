@@ -1,18 +1,16 @@
-# コマンドのインターフェース
+require_relative 'option'
 class FormatOption < Option
-  attr_reader :description
-  def initialize(file_data, long_format)
-    @long_format = long_format
-    @file_data = file_data
+
+  def initialize(file, option, total_block)
+    super(file, option)
+    @total_block = total_block
   end
 
   def execute
-    if @long_format
-      ["total #{@file_data.sum { |status| status.file_status[:blocks] }}"]
-      .concat(@file_data.map(&:display_file_status))
-      .join("\n")
+    if @option
+      ["total #{@total_block}"].concat(@files.map(&:display_file_status)).join("\n")
     else
-      @file_data.map(&:name).join(' ')
+      @files.map(&:name).join(' ')
     end
   end
 end

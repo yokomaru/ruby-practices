@@ -1,6 +1,7 @@
-# コマンドのインターフェース
 class Option
-  def initialize()
+  def initialize(files, option)
+    @files = files
+    @option = option
   end
 
   def execute
