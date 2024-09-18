@@ -7,8 +7,9 @@ require_relative 'option/format_option'
 require_relative 'option/sort_option'
 
 class LsCommand
-  def initialize(path, dot_match: false, reverse: false, long_format: false)
+  def initialize(path, width: 80, dot_match: false, reverse: false, long_format: false)
     @path = path
+    @width = width
     @dot_match = dot_match
     @reverse = reverse
     @long_format = long_format
@@ -17,7 +18,7 @@ class LsCommand
   end
 
   def display
-    FormatOption.new(@files, @long_format, @total_block).execute
+    FormatOption.new(@files, @long_format, @total_block, @width).execute
   end
 
   private
