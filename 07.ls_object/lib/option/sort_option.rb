@@ -3,10 +3,6 @@
 require_relative 'option'
 class SortOption < Option
   def execute
-    if @option
-      @files.sort_by(&:name).reverse
-    else
-      @files.sort_by(&:name)
-    end
+    @option ? @files.sort_by(&:name).reverse : @files.sort_by(&:name)
   end
 end
