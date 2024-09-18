@@ -14,6 +14,6 @@ if __FILE__ == $PROGRAM_NAME
   opt.parse!(ARGV)
 
   ls = LsCommand.new('.', **params)
-
+  ls.build_files
   puts ls.display
 end

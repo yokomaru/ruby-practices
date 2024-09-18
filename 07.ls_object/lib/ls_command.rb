@@ -3,6 +3,11 @@
 require 'debug'
 require 'pathname'
 require_relative 'file_data'
+require_relative 'option/option'
+require_relative 'option/composit_option'
+require_relative 'option/match_option'
+require_relative 'option/format_option'
+require_relative 'option/sort_option'
 
 class LsCommand
   def initialize(path, dot_match: false, reverse: false, long_format: false)
@@ -11,6 +16,7 @@ class LsCommand
     @reverse = reverse
     @long_format = long_format
     @file_data = Dir.open(@path).entries.map { |name| FileData.new(name, @path) }
+    @command_list = CompositeOption.new
     @matched_files = dot_match_files
     @sorted_files = sort_files
     @formated_files = format_files
@@ -18,6 +24,13 @@ class LsCommand
 
   def display
     @formated_files
+  end
+
+  def build_files
+    @command_list.add_option(MatchOption.new(@file_data, @dot_match))
+    @command_list.add_option(SortOption.new(@file_data, @reverse))
+    @command_list.add_option(FormatOption.new(@file_data, @long_format))
+    p @command_list.execute
   end
 
   private
