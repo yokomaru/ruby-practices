@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'io/console'
 require 'optparse'
 require_relative '../lib/ls_command'
 
