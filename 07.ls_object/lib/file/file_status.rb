@@ -16,8 +16,6 @@ class FileStatus
     '7' => 'rwx'
   }.freeze
 
-  attr_reader :file_name, :file_status
-
   def initialize(file_name, path)
     @file_name = file_name
     @pathname = Pathname(File.absolute_path(@file_name, path))
