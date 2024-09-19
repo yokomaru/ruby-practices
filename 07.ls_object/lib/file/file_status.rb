@@ -16,40 +16,27 @@ class FileStatus
     '7' => 'rwx'
   }.freeze
 
-  def initialize(file_name, path)
-    @file_name = file_name
-    @pathname = Pathname(File.absolute_path(@file_name, path))
-    @status = File::Stat.new(@pathname)
-    @file_type = format_file_type
-    @file_mode = format_file_mode
-    @hardlink_nums = @status.nlink.to_s
+  attr_reader :file_type, :file_mode, :hardlink_nums, :owner_name, :group_name, :bytesize, :latest_modify_datetime, :blocks
+
+  def initialize(path)
+    @status = File::Stat.new(path)
+    @file_type = format_file_type(path)
+    @file_mode = format_file_mode(path)
+    @hardlink_nums = @status.nlink
     @owner_name = Etc.getpwuid(@status.uid).name
     @group_name = Etc.getgrgid(@status.gid).name
-    @bytesize = @status.size.to_s
+    @bytesize = @status.size
     @latest_modify_datetime = @status.mtime.strftime('%_m %e %H:%M')
     @blocks = @status.blocks
   end
 
-  def build_file_status
-    {
-      type_and_mode: "#{@file_type}#{@file_mode}",
-      hardlink_nums: @hardlink_nums,
-      owner_name: @owner_name,
-      group_name: @group_name,
-      bytesize: @bytesize,
-      latest_modify_datetime: @latest_modify_datetime,
-      filename: @file_name,
-      blocks: @blocks
-    }
-  end
-
   private
 
-  def format_file_type
-    @pathname.directory? ? 'd' : '-'
+  def format_file_type(path_name)
+    path_name.directory? ? 'd' : '-'
   end
 
-  def format_file_mode
-    @pathname.stat.mode.to_s(8)[-3..].gsub(/./, MODE_TABLE)
+  def format_file_mode(path_name)
+    path_name.stat.mode.to_s(8)[-3..].gsub(/./, MODE_TABLE)
   end
 end
