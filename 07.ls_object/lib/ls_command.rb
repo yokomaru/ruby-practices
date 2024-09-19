@@ -27,6 +27,4 @@ class LsCommand
     matched_files = MatchOption.new(files, @dot_match).execute
     SortOption.new(matched_files, @reverse).execute
   end
-
-
 end
