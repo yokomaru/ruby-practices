@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'etc'
-require 'debug'
 require_relative 'file_status'
 
 class FileData
