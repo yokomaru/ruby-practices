@@ -3,11 +3,11 @@
 require_relative 'format'
 
 class LongFormat < Format
-  def initialize(files, total_block)
+  def initialize(files)
     super(files)
-    @total_block = total_block
     @max_sizes = build_max_sizes
-    @long_format_data = build_long_format
+    @total_block = sum_blocks
+    @long_format_data = build_long_format_data
   end
 
   def render
@@ -17,7 +17,7 @@ class LongFormat < Format
 
   private
 
-  def build_long_format
+  def build_long_format_data
     @files.map { |file| format_row(file.file_status, *@max_sizes) }
   end
 
@@ -41,5 +41,9 @@ class LongFormat < Format
       " #{data[:latest_modify_datetime]}",
       " #{data[:filename]}"
     ].join
+  end
+
+  def sum_blocks
+    @files.sum { |status| status.file_status[:blocks] }
   end
 end

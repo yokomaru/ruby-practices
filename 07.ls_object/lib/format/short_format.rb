@@ -17,12 +17,12 @@ class ShortFormat < Format
 
   private
 
-  def calculate_row_count
-    @col_count.zero? ? @files.count : (@files.count.to_f / @col_count).ceil
-  end
-
   def calculate_col_count
     @width / (@max_file_name + 1)
+  end
+
+  def calculate_row_count
+    @col_count.zero? ? @files.count : (@files.count.to_f / @col_count).ceil
   end
 
   def safe_transpose

@@ -5,15 +5,14 @@ require_relative '../format/long_format'
 require_relative '../format/short_format'
 
 class FormatOption < Option
-  def initialize(files, option, total_block, width)
+  def initialize(files, option, width)
     super(files, option)
-    @total_block = total_block
     @width = width
   end
 
   def execute
     if @option
-      LongFormat.new(@files, @total_block).render
+      LongFormat.new(@files).render
     else
       ShortFormat.new(@files, @width).render
     end

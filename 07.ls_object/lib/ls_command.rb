@@ -14,11 +14,10 @@ class LsCommand
     @reverse = reverse
     @long_format = long_format
     @files = build_files
-    @total_block = sum_blocks
   end
 
   def display
-    FormatOption.new(@files, @long_format, @total_block, @width).execute
+    FormatOption.new(@files, @long_format, @width).execute
   end
 
   private
@@ -29,7 +28,5 @@ class LsCommand
     SortOption.new(matched_files, @reverse).execute
   end
 
-  def sum_blocks
-    @files.sum { |status| status.file_status[:blocks] }
-  end
+
 end
