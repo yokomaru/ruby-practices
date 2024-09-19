@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'etc'
+require 'pathname'
 require_relative 'file_status'
 
 class FileData

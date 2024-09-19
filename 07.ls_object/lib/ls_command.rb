@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'debug'
 require_relative 'file/file_data'
 require_relative 'option/match_option'
 require_relative 'option/format_option'

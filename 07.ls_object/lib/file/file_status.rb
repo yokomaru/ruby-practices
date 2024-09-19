@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'etc'
-require 'pathname'
 
 class FileStatus
   MODE_TABLE = {
