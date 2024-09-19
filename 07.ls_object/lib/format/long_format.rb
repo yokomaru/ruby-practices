@@ -31,19 +31,19 @@ class LongFormat < Format
     @files.map { |file| file.file_status[key].size }.max
   end
 
-  def format_row(data, max_nlink, max_user, max_group, max_size)
+  def format_row(status, max_nlink, max_user, max_group, max_size)
     [
-      data[:type_and_mode],
-      "  #{data[:hardlink_nums].rjust(max_nlink)}",
-      " #{data[:owner_name].ljust(max_user)}",
-      "  #{data[:group_name].ljust(max_group)}",
-      "  #{data[:bytesize].rjust(max_size)}",
-      " #{data[:latest_modify_datetime]}",
-      " #{data[:filename]}"
+      status[:type_and_mode],
+      "  #{status[:hardlink_nums].rjust(max_nlink)}",
+      " #{status[:owner_name].ljust(max_user)}",
+      "  #{status[:group_name].ljust(max_group)}",
+      "  #{status[:bytesize].rjust(max_size)}",
+      " #{status[:latest_modify_datetime]}",
+      " #{status[:filename]}"
     ].join
   end
 
   def sum_blocks
-    @files.sum { |status| status.file_status[:blocks] }
+    @files.sum { |file| file.file_status[:blocks] }
   end
 end
