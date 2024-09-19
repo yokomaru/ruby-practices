@@ -12,7 +12,7 @@ class ShortFormat < Format
   end
 
   def render
-    format_table(safe_transpose)
+    safe_transpose.map { |row_files| render_short_format_row(row_files) }.join("\n")
   end
 
   private
@@ -30,13 +30,9 @@ class ShortFormat < Format
     nested_file_names[0].zip(*nested_file_names[1..])
   end
 
-  def format_table(file_paths)
-    file_paths.map { |row_files| render_short_format_row(row_files) }.join("\n")
-  end
-
   def render_short_format_row(row_files)
-    row_files.map do |file_path|
-      basename = file_path ? File.basename(file_path.name) : ''
+    row_files.map do |files|
+      basename = files ? File.basename(files.name) : ''
       basename.ljust(@max_file_name + 1)
     end.join.rstrip
   end
