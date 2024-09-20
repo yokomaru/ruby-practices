@@ -33,42 +33,45 @@ class LsCommandTest < Minitest::Test
   end
 
   def test_display_long_format_file
+    # Output example
+    #  total 8
+    #  -rw-r--r--  1 suzukiyouko  staff  10  9 15 14:34 test.txt
+    path = 'test/test_dir/test_one_file'
     params = { long_format: true }
-    ls_command = LsCommand.new('test/test_dir/test_one_file', **params)
-    expected = <<~LS_RESULT.chomp
-      total 8
-      -rw-r--r--  1 suzukiyouko  staff  10  9 15 14:34 test.txt
-    LS_RESULT
+    expected = `ls -l #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
     assert_equal expected, ls_command.display
   end
 
   def test_display_long_format_and_dot_match_file
+    # Output example
+    # total 16
+    # drwxr-xr-x  6 suzukiyouko  staff  192  9 16 15:18 .
+    # drwxr-xr-x  5 suzukiyouko  staff  160  9 19 18:20 ..
+    # -rw-r--r--  1 suzukiyouko  staff    0  9 16 15:14 .test
+    # drwxr-xr-x  2 suzukiyouko  staff   64  9 16 15:18 dir
+    # -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test.txt
+    # -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test_2.txt
+    path = 'test/test_dir/test_include_dir_and_dot_files'
     params = { long_format: true, dot_match: true }
-    ls_command = LsCommand.new('test/test_dir/test_include_dir_and_dot_files', **params)
-    expected = <<~LS_RESULT.chomp
-      total 16
-      drwxr-xr-x  6 suzukiyouko  staff  192  9 16 15:18 .
-      drwxr-xr-x  5 suzukiyouko  staff  160  9 19 18:20 ..
-      -rw-r--r--  1 suzukiyouko  staff    0  9 16 15:14 .test
-      drwxr-xr-x  2 suzukiyouko  staff   64  9 16 15:18 dir
-      -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test.txt
-      -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test_2.txt
-    LS_RESULT
+    expected = `ls -al #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
     assert_equal expected, ls_command.display
   end
 
   def test_display_long_format_and_dot_match_and_reverse_file
+    # Output example
+    # total 16
+    #  -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test_2.txt
+    #  -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test.txt
+    #  drwxr-xr-x  2 suzukiyouko  staff   64  9 16 15:18 dir
+    #  -rw-r--r--  1 suzukiyouko  staff    0  9 16 15:14 .test
+    #  drwxr-xr-x  5 suzukiyouko  staff  160  9 19 18:20 ..
+    #  drwxr-xr-x  6 suzukiyouko  staff  192  9 16 15:18 .
     params = { reverse: true, long_format: true, dot_match: true }
-    ls_command = LsCommand.new('test/test_dir/test_include_dir_and_dot_files', **params)
-    expected = <<~LS_RESULT.chomp
-      total 16
-      -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test_2.txt
-      -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test.txt
-      drwxr-xr-x  2 suzukiyouko  staff   64  9 16 15:18 dir
-      -rw-r--r--  1 suzukiyouko  staff    0  9 16 15:14 .test
-      drwxr-xr-x  5 suzukiyouko  staff  160  9 19 18:20 ..
-      drwxr-xr-x  6 suzukiyouko  staff  192  9 16 15:18 .
-    LS_RESULT
+    path = 'test/test_dir/test_include_dir_and_dot_files'
+    expected = `ls -arl #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
     assert_equal expected, ls_command.display
   end
 
