@@ -23,8 +23,8 @@ class ShortFormat < Format
   end
 
   def build_short_format_row(row_files)
-    row_files.map do |files|
-      basename = files ? File.basename(files.name) : ''
+    row_files.map do |file|
+      basename = file ? File.basename(file.name) : ''
       basename.ljust(@max_file_name + 1)
     end.join.rstrip
   end

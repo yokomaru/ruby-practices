@@ -31,11 +31,11 @@ class FileStatus
 
   private
 
-  def format_file_type(path_name)
-    path_name.directory? ? 'd' : '-'
+  def format_file_type(path)
+    path.directory? ? 'd' : '-'
   end
 
-  def format_file_mode(path_name)
-    path_name.stat.mode.to_s(8)[-3..].gsub(/./, MODE_TABLE)
+  def format_file_mode(path)
+    path.stat.mode.to_s(8)[-3..].gsub(/./, MODE_TABLE)
   end
 end
