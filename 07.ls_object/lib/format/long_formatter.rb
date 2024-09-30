@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'format'
+require_relative 'formatter'
 
-class LongFormat < Format
+class LongFormatter < Formatter
   def initialize(files)
     super(files)
     @max_sizes = build_max_sizes
@@ -10,7 +10,7 @@ class LongFormat < Format
     @long_format_data = build_long_format_data
   end
 
-  def render
+  def format
     total = "total #{@total_block}"
     [total, *@long_format_data].join("\n")
   end

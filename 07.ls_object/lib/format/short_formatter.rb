@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'format'
+require_relative 'formatter'
 
-class ShortFormat < Format
+class ShortFormatter < Formatter
   def initialize(files, width)
     super(files)
     @width = width
@@ -12,7 +12,7 @@ class ShortFormat < Format
     @short_format_data = build_short_format_data
   end
 
-  def render
+  def format
     @short_format_data.join("\n")
   end
 

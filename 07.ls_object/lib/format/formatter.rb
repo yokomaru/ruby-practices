@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Format
+class Formatter
   def initialize(files)
     @files = files
   end
