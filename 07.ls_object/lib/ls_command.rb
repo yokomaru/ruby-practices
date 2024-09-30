@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'file/file_data'
-require_relative 'option/match_option'
-require_relative 'option/format_option'
-require_relative 'option/sort_option'
+require_relative 'format/long_format'
+require_relative 'format/short_format'
 
 class LsCommand
   def initialize(path, width: 80, dot_match: false, reverse: false, long_format: false)
@@ -16,14 +15,14 @@ class LsCommand
   end
 
   def display
-    FormatOption.new(@files, @long_format, @width).execute
+    @long_format ? LongFormat.new(@files).render : ShortFormatter.new(@files, @width).render
   end
 
   private
 
   def build_files
     files = Dir.open(@path).entries.map { |name| FileData.new(name, @path) }
-    matched_files = MatchOption.new(files, @dot_match).execute
-    SortOption.new(matched_files, @reverse).execute
+    matched_files = @dot_match ? files : files.filter { |file| !/^\./.match?(file.name) }
+    @reverse ? matched_files.sort_by(&:name).reverse : matched_files.sort_by(&:name)
   end
 end
