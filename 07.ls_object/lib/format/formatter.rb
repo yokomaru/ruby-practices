@@ -5,5 +5,5 @@ class Formatter
     @files = files
   end
 
-  def render; end
+  def format; end
 end
