@@ -14,7 +14,7 @@ class LsCommand
     @files = build_files
   end
 
-  def display
+  def formatted_output
     @long_format ? LongFormatter.new(@files).format : ShortFormatter.new(@files, @width).format
   end
 

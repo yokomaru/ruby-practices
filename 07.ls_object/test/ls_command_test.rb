@@ -6,30 +6,30 @@ require_relative '../lib/ls_command'
 class LsCommandTest < Minitest::Test
   def test_display_a_file
     ls_command = LsCommand.new('test/test_dir/test_one_file')
-    assert_equal 'test.txt', ls_command.display
+    assert_equal 'test.txt', ls_command.formatted_output
   end
 
   def test_display_files
     ls_command = LsCommand.new('test/test_dir/test_include_dir_and_dot_files')
-    assert_equal 'dir        test.txt   test_2.txt', ls_command.display
+    assert_equal 'dir        test.txt   test_2.txt', ls_command.formatted_output
   end
 
   def test_display_match_dot_files
     params = { dot_match: true }
     ls_command = LsCommand.new('test/test_dir/test_include_dir_and_dot_files', **params)
-    assert_equal '.          ..         .test      dir        test.txt   test_2.txt', ls_command.display
+    assert_equal '.          ..         .test      dir        test.txt   test_2.txt', ls_command.formatted_output
   end
 
   def test_display_reverse_sort_files
     params = { reverse: true, dot_match: false }
     ls_command = LsCommand.new('test/test_dir/test_include_dir_and_dot_files', **params)
-    assert_equal 'test_2.txt test.txt   dir', ls_command.display
+    assert_equal 'test_2.txt test.txt   dir', ls_command.formatted_output
   end
 
   def test_display_dot_match_and_reverse_sort_file
     params = { reverse: true, dot_match: true }
     ls_command = LsCommand.new('test/test_dir/test_include_dir_and_dot_files', **params)
-    assert_equal 'test_2.txt test.txt   dir        .test      ..         .', ls_command.display
+    assert_equal 'test_2.txt test.txt   dir        .test      ..         .', ls_command.formatted_output
   end
 
   def test_display_long_format_file
@@ -40,7 +40,7 @@ class LsCommandTest < Minitest::Test
     params = { long_format: true }
     expected = `ls -l #{path}`.chomp
     ls_command = LsCommand.new(path, **params)
-    assert_equal expected, ls_command.display
+    assert_equal expected, ls_command.formatted_output
   end
 
   def test_display_long_format_and_dot_match_file
@@ -56,7 +56,7 @@ class LsCommandTest < Minitest::Test
     params = { long_format: true, dot_match: true }
     expected = `ls -al #{path}`.chomp
     ls_command = LsCommand.new(path, **params)
-    assert_equal expected, ls_command.display
+    assert_equal expected, ls_command.formatted_output
   end
 
   def test_display_long_format_and_dot_match_and_reverse_file
@@ -72,13 +72,13 @@ class LsCommandTest < Minitest::Test
     path = 'test/test_dir/test_include_dir_and_dot_files'
     expected = `ls -arl #{path}`.chomp
     ls_command = LsCommand.new(path, **params)
-    assert_equal expected, ls_command.display
+    assert_equal expected, ls_command.formatted_output
   end
 
   def test_display_width_eighty
     params = { dot_match: true }
     ls_command = LsCommand.new('test/test_dir/test_include_dir_and_dot_files', **params)
-    assert_equal '.          ..         .test      dir        test.txt   test_2.txt', ls_command.display
+    assert_equal '.          ..         .test      dir        test.txt   test_2.txt', ls_command.formatted_output
   end
 
   def test_display_width_fourty
@@ -88,7 +88,7 @@ class LsCommandTest < Minitest::Test
       .          .test      test.txt
       ..         dir        test_2.txt
     LS_RESULT
-    assert_equal expected, ls_command.display
+    assert_equal expected, ls_command.formatted_output
   end
 
   def test_display_width_thirty
@@ -99,7 +99,7 @@ class LsCommandTest < Minitest::Test
       ..         test.txt
       .test      test_2.txt
     LS_RESULT
-    assert_equal expected, ls_command.display
+    assert_equal expected, ls_command.formatted_output
   end
 
   def test_display_width_twenty
@@ -113,6 +113,6 @@ class LsCommandTest < Minitest::Test
       test.txt
       test_2.txt
     LS_RESULT
-    assert_equal expected, ls_command.display
+    assert_equal expected, ls_command.formatted_output
   end
 end

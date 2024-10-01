@@ -17,5 +17,5 @@ if __FILE__ == $PROGRAM_NAME
   width = IO.console.winsize[1]
 
   ls = LsCommand.new(path, width:, **params)
-  puts ls.display
+  puts ls.formatted_output
 end
