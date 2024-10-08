@@ -3,16 +3,17 @@
 require_relative 'formatter'
 
 class LongFormatter < Formatter
-  def initialize(files)
+  def initialize(files, path)
     super(files)
+    @path = path
     @max_sizes = build_max_sizes
     @total_block = sum_blocks
     @long_format_data = build_long_format_data
   end
 
   def format
-    total = "total #{@total_block}"
-    [total, *@long_format_data].join("\n")
+    total = "total #{@total_block}" if File.directory?(@path) || @files.size > 1
+    [total, *@long_format_data].compact.join("\n")
   end
 
   private
@@ -33,7 +34,7 @@ class LongFormatter < Formatter
 
   def format_row(status, max_nlink, max_user, max_group, max_size)
     [
-      status[:filemode],
+      status[:type_and_mode],
       "  #{status[:hardlink_nums].rjust(max_nlink)}",
       " #{status[:owner_name].ljust(max_user)}",
       "  #{status[:group_name].ljust(max_group)}",

@@ -49,29 +49,23 @@ class FileData
   def initialize(name, path)
     @name = name
     @full_path = Pathname(File.absolute_path(@name, path))
-    @file_status = build_file_status(File::Stat.new(@full_path))
+    @file_type = File.ftype(@full_path)
+    @file_status = build_file_status(File.lstat(@full_path))
   end
 
   private
 
   def build_file_status(status)
     {
-      filemode: filemode(status),
+      type_and_mode: type_and_mode(status),
       hardlink_nums: status.nlink.to_s,
       owner_name: Etc.getpwuid(status.uid).name,
       group_name: Etc.getgrgid(status.gid).name,
-      bytesize: status.size.to_s,
+      bytesize: generate_rdev_or_bytesize(status),
       latest_modify_datetime: status.mtime.strftime('%_m %e %H:%M'),
-      filename: @name,
+      filename: generate_file_name(status),
       blocks: status.blocks
     }
-  end
-
-  def filemode(status)
-    mode = status.mode.to_s(8).rjust(6, '0')
-    [OWNER_PERMISSION_INDEX, GROUP_PERMISSION_INDEX, OTHER_PERMISSION_INDEX].map do |index|
-      convert_permission(mode[index], mode[SPECIAL_PERMISSION_INDEX], TARGET_SPECIAL_PERMISSION[index])
-    end.unshift(FILE_TYPE[mode[0, SPECIAL_PERMISSION_INDEX]]).join
   end
 
   def convert_permission(permission, special_permission, target_special_permission)
@@ -82,5 +76,20 @@ class FileData
     special_permission_type = SPECIAL_PERMISSION_TYPE[special_permission]
     special_permission_type = special_permission_type.upcase if permission.to_i.even?
     [permission_type.chop, special_permission_type].join
+  end
+
+  def generate_file_name(status)
+    status.symlink? ? "#{@name} -> #{File.readlink(@full_path)}" : @name
+  end
+
+  def generate_rdev_or_bytesize(status)
+    %w[characterSpecial blockSpecial].include?(@file_type) ? format('%#01x', status.rdev.to_s(10)) : status.size.to_s
+  end
+
+  def type_and_mode(status)
+    mode = status.mode.to_s(8).rjust(6, '0')
+    [OWNER_PERMISSION_INDEX, GROUP_PERMISSION_INDEX, OTHER_PERMISSION_INDEX].map do |index|
+      convert_permission(mode[index], mode[SPECIAL_PERMISSION_INDEX], TARGET_SPECIAL_PERMISSION[index])
+    end.unshift(FILE_TYPE[mode[0, SPECIAL_PERMISSION_INDEX]]).join
   end
 end

@@ -137,4 +137,51 @@ class LsCommandTest < Minitest::Test
     ls_command = LsCommand.new(path, **params)
     assert_equal expected, ls_command.formatted_output
   end
+
+  def test_display_some_file_types
+    # Output example
+    # total 0
+    # drwxr-xr-x  2 suzukiyouko  staff   64 10  7 23:12 test_dir
+    # -rw-r--r--  1 suzukiyouko  staff    0 10  7 23:07 test_file.txt
+    # lrwxr-xr-x  1 suzukiyouko  staff  102 10  7 22:59 test_link -> ../07.ls_object/test/test_dir/link_dir/link_test.txt # フルパスのため省略
+    # prw-r--r--  1 suzukiyouko  staff    0 10  8 01:17 testfile
+    params = { long_format: true }
+    path = 'test/test_dir/file_type_dir'
+    # パイプファイルの作成
+    `mkfifo test/test_dir/file_type_dir/test_fifo_file` unless File.exist?('test/test_dir/file_type_dir/test_fifo_file')
+    expected = `ls -l #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
+    assert_equal expected, ls_command.formatted_output
+  end
+
+  def test_display_block_device_file_type
+    # Output example
+    # brw-r-----  1 root  operator  0x1000004  9  8 09:43 /dev/disk1
+    params = { long_format: true }
+    path = '/dev/disk1'
+    expected = `ls -l #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
+    assert_equal expected, ls_command.formatted_output
+  end
+
+  def test_display_character_device_file_file_type
+    # Output example
+    # total 0
+    # crw-rw-rw-  1 root  wheel  0x3000002 10  8 01:26 /dev/null
+    params = { long_format: true }
+    path = '/dev/null'
+    expected = `ls -l #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
+    assert_equal expected, ls_command.formatted_output
+  end
+
+  def test_display_local_domain_sockets_file_type
+    # Output example
+    # srw-------  1 root  daemon  0  9  8 09:43 /var/run/vpncontrol.sock
+    params = { long_format: true }
+    path = '/var/run/vpncontrol.sock'
+    expected = `ls -l #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
+    assert_equal expected, ls_command.formatted_output
+  end
 end
