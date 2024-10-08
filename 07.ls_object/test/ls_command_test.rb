@@ -115,4 +115,26 @@ class LsCommandTest < Minitest::Test
     LS_RESULT
     assert_equal expected, ls_command.formatted_output
   end
+
+  def test_display_special_permission
+    # Output example
+    # total 0
+    # -rwxr-sr-x  1 username  staff  0 10  7 21:46 set_group_id_file.txt
+    # -rwxr-Sr-x  1 username  staff  0 10  7 22:05 set_group_id_file_not_x_permission.txt
+    # -rwsr-xr-x  1 username  staff  0 10  7 21:46 set_user_id_file.txt
+    # -r-Sr-xr-x  1 username  staff  0 10  7 22:05 set_user_id_file_not_x_permission.txt
+    # -rwxr-xr-t  1 username  staff  0 10  7 21:46 sticky_bit_file.txt
+    # -rwxr-xr-T  1 username  staff  0 10  7 21:51 sticky_bit_file_not_x_permission.txt
+    params = { long_format: true }
+    path = 'test/test_dir/special_permission_dir'
+    `chmod 2755 #{path}/set_group_id_file.txt` # group permissionに実行権限xと特殊権限を付与
+    `chmod 2745 #{path}/set_group_id_file_not_x_permission.txt` # group permissionの実行権限xを外し特殊権限を付与
+    `chmod 4755 #{path}/set_user_id_file.txt` # owner permissionに実行権限xと特殊権限を付与
+    `chmod 4455 #{path}/set_user_id_file_not_x_permission.txt` # owner permissionの実行権限xを外し特殊権限を付与
+    `chmod 1755 #{path}/sticky_bit_file.txt` # other permissionに実行権限xと特殊権限を付与
+    `chmod 1754 #{path}/sticky_bit_file_not_x_permission.txt` # other permissionの実行権限xを外し特殊権限を付与
+    expected = `ls -l #{path}`.chomp
+    ls_command = LsCommand.new(path, **params)
+    assert_equal expected, ls_command.formatted_output
+  end
 end
