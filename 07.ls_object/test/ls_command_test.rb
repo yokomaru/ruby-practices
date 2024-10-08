@@ -149,6 +149,8 @@ class LsCommandTest < Minitest::Test
     path = 'test/test_dir/file_type_dir'
     # パイプファイルの作成
     `mkfifo test/test_dir/file_type_dir/test_fifo_file` unless File.exist?('test/test_dir/file_type_dir/test_fifo_file')
+    # シンボリックリンクの作成
+    `ln -s /test/test_dir/link_dir/link_test.txt test/test_dir/file_type_dir/link_test` unless File.exist?('test/test_dir/file_type_dir/link_test')
     expected = `ls -l #{path}`.chomp
     ls_command = LsCommand.new(path, **params)
     assert_equal expected, ls_command.formatted_output
