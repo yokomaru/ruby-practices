@@ -34,7 +34,7 @@ class LongFormatter < Formatter
 
   def format_row(status, max_nlink, max_user, max_group, max_size)
     [
-      status[:type_and_mode],
+      "#{status[:type]}#{status[:mode]}",
       "  #{status[:hardlink_nums].rjust(max_nlink)}",
       " #{status[:owner_name].ljust(max_user)}",
       "  #{status[:group_name].ljust(max_group)}",

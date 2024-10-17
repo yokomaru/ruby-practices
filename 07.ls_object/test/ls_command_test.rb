@@ -35,7 +35,7 @@ class LsCommandTest < Minitest::Test
   def test_display_long_format_file
     # Output example
     #  total 8
-    #  -rw-r--r--  1 suzukiyouko  staff  10  9 15 14:34 test.txt
+    #  -rw-r--r--  1 username  staff  10  9 15 14:34 test.txt
     path = 'test/test_dir/test_one_file'
     params = { long_format: true }
     expected = `ls -l #{path}`.chomp
@@ -46,12 +46,12 @@ class LsCommandTest < Minitest::Test
   def test_display_long_format_and_dot_match_file
     # Output example
     # total 16
-    # drwxr-xr-x  6 suzukiyouko  staff  192  9 16 15:18 .
-    # drwxr-xr-x  5 suzukiyouko  staff  160  9 19 18:20 ..
-    # -rw-r--r--  1 suzukiyouko  staff    0  9 16 15:14 .test
-    # drwxr-xr-x  2 suzukiyouko  staff   64  9 16 15:18 dir
-    # -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test.txt
-    # -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test_2.txt
+    # drwxr-xr-x  6 username  staff  192  9 16 15:18 .
+    # drwxr-xr-x  5 username  staff  160  9 19 18:20 ..
+    # -rw-r--r--  1 username  staff    0  9 16 15:14 .test
+    # drwxr-xr-x  2 username  staff   64  9 16 15:18 dir
+    # -rw-r--r--  1 username  staff   10  9 16 15:14 test.txt
+    # -rw-r--r--  1 username  staff   10  9 16 15:14 test_2.txt
     path = 'test/test_dir/test_include_dir_and_dot_files'
     params = { long_format: true, dot_match: true }
     expected = `ls -al #{path}`.chomp
@@ -62,12 +62,12 @@ class LsCommandTest < Minitest::Test
   def test_display_long_format_and_dot_match_and_reverse_file
     # Output example
     # total 16
-    #  -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test_2.txt
-    #  -rw-r--r--  1 suzukiyouko  staff   10  9 16 15:14 test.txt
-    #  drwxr-xr-x  2 suzukiyouko  staff   64  9 16 15:18 dir
-    #  -rw-r--r--  1 suzukiyouko  staff    0  9 16 15:14 .test
-    #  drwxr-xr-x  5 suzukiyouko  staff  160  9 19 18:20 ..
-    #  drwxr-xr-x  6 suzukiyouko  staff  192  9 16 15:18 .
+    #  -rw-r--r--  1 username  staff   10  9 16 15:14 test_2.txt
+    #  -rw-r--r--  1 username  staff   10  9 16 15:14 test.txt
+    #  drwxr-xr-x  2 username  staff   64  9 16 15:18 dir
+    #  -rw-r--r--  1 username  staff    0  9 16 15:14 .test
+    #  drwxr-xr-x  5 username  staff  160  9 19 18:20 ..
+    #  drwxr-xr-x  6 username  staff  192  9 16 15:18 .
     params = { reverse: true, long_format: true, dot_match: true }
     path = 'test/test_dir/test_include_dir_and_dot_files'
     expected = `ls -arl #{path}`.chomp
@@ -121,6 +121,8 @@ class LsCommandTest < Minitest::Test
     # total 0
     # -rwxr-sr-x  1 username  staff  0 10  7 21:46 set_group_id_file.txt
     # -rwxr-Sr-x  1 username  staff  0 10  7 22:05 set_group_id_file_not_x_permission.txt
+    # -r-Sr-Sr-T  1 username  staff  0 10 17 00:18 set_user_id_and_group_id_and_sticky_bit_permission.txt
+    # -rwsr-sr-x  1 username  staff  0 10 17 00:17 set_user_id_and_group_id_permission.txt
     # -rwsr-xr-x  1 username  staff  0 10  7 21:46 set_user_id_file.txt
     # -r-Sr-xr-x  1 username  staff  0 10  7 22:05 set_user_id_file_not_x_permission.txt
     # -rwxr-xr-t  1 username  staff  0 10  7 21:46 sticky_bit_file.txt
@@ -133,6 +135,8 @@ class LsCommandTest < Minitest::Test
     `chmod 4455 #{path}/set_user_id_file_not_x_permission.txt` # owner permissionの実行権限xを外し特殊権限を付与
     `chmod 1755 #{path}/sticky_bit_file.txt` # other permissionに実行権限xと特殊権限を付与
     `chmod 1754 #{path}/sticky_bit_file_not_x_permission.txt` # other permissionの実行権限xを外し特殊権限を付与
+    `chmod 6755 test/test_dir/special_permission_dir/set_user_id_and_group_id_permission.txt`
+    `chmod 7444 test/test_dir/special_permission_dir/set_user_id_and_group_id_and_sticky_bit_permission.txt`
     expected = `ls -l #{path}`.chomp
     ls_command = LsCommand.new(path, **params)
     assert_equal expected, ls_command.formatted_output
@@ -141,10 +145,10 @@ class LsCommandTest < Minitest::Test
   def test_display_some_file_types
     # Output example
     # total 0
-    # drwxr-xr-x  2 suzukiyouko  staff   64 10  7 23:12 test_dir
-    # -rw-r--r--  1 suzukiyouko  staff    0 10  7 23:07 test_file.txt
-    # lrwxr-xr-x  1 suzukiyouko  staff  102 10  7 22:59 test_link -> ../07.ls_object/test/test_dir/link_dir/link_test.txt # フルパスのため省略
-    # prw-r--r--  1 suzukiyouko  staff    0 10  8 01:17 testfile
+    # drwxr-xr-x  2 username  staff   64 10  7 23:12 test_dir
+    # -rw-r--r--  1 username  staff    0 10  7 23:07 test_file.txt
+    # lrwxr-xr-x  1 username  staff  102 10  7 22:59 test_link -> ../07.ls_object/test/test_dir/link_dir/link_test.txt # フルパスのため省略
+    # prw-r--r--  1 username  staff    0 10  8 01:17 testfile
     params = { long_format: true }
     path = 'test/test_dir/file_type_dir'
     # パイプファイルの作成
